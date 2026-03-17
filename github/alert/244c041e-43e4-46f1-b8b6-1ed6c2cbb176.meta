@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "244c041e-43e4-46f1-b8b6-1ed6c2cbb176",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T13:16:49.918707174Z",
+	"LastUpdated": "2026-03-03T15:28:10.454669968-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Account - Medium - Plan Changed",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "3bbe55d2-0874-4dbb-9367-a345d889b9e6",
-	"UID": 1,
+	"ThingUUID": "e71f32e4-0d54-438d-995c-06ec20ada5ec",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

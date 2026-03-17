@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "7ffad7af-70fe-43be-a4c0-d11cc805102e",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T14:42:26.301043926Z",
+	"LastUpdated": "2026-03-03T15:28:10.29737397-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Business - High - Secret Scanning Disabled for Enterprise",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "c1f43103-55a2-4dd0-8e0a-4ca5eefe22de",
-	"UID": 1,
+	"ThingUUID": "98849a8b-ab58-4a6c-b995-06f2590d1a67",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

@@ -1,7 +1,7 @@
 {
-	"UUID": "21b36f6a-d4b8-4718-98c1-5a922abaab68",
+	"UUID": "643d41d3-9176-4b7e-a3a7-a53a858497ab",
 	"GUID": "e32f22f2-6841-49e8-b7a2-6501c394bb94",
-	"UID": 1,
+	"UID": 2,
 	"GIDs": [],
 	"Global": true,
 	"WriteAccess": {
@@ -10,13 +10,15 @@
 	},
 	"Name": "Playbook - GitHub - Token - High - Personal Access Token (PAT) Granted or Created",
 	"Desc": "",
-	"Labels": ["github", "github"],
-	"LastUpdated": "2025-10-14T21:25:16.615291000Z",
+	"Labels": [
+		"github"
+	],
+	"LastUpdated": "2026-03-03T15:28:09.825137462-07:00",
 	"Author": {
 		"Name": "Gravwell",
 		"Email": "info@gravwell.io",
 		"Company": "Gravwell",
 		"URL": "gravwell.io"
 	},
-	"Synced": false
+	"Synced": true
 }

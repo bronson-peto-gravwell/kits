@@ -1,7 +1,7 @@
 {
-	"UUID": "4a128dde-36f6-4a08-bc01-a48c6fd78ace",
+	"UUID": "47d6499e-0a7b-4398-8f50-be1cf894ef8a",
 	"GUID": "3d43f4aa-4d15-4323-88be-e4b52294b59d",
-	"UID": 1,
+	"UID": 2,
 	"GIDs": [],
 	"Global": true,
 	"WriteAccess": {
@@ -10,13 +10,15 @@
 	},
 	"Name": "Playbook - GitHub - Org - Medium - Push Protection for Secret Scanning Disabled for New Repos",
 	"Desc": "",
-	"Labels": ["github", "github"],
-	"LastUpdated": "2025-10-14T21:25:16.609482000Z",
+	"Labels": [
+		"github"
+	],
+	"LastUpdated": "2026-03-03T15:28:09.793884827-07:00",
 	"Author": {
 		"Name": "Gravwell",
 		"Email": "info@gravwell.io",
 		"Company": "Gravwell",
 		"URL": "gravwell.io"
 	},
-	"Synced": false
+	"Synced": true
 }

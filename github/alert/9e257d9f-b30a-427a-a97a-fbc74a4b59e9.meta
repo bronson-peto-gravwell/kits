@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "9e257d9f-b30a-427a-a97a-fbc74a4b59e9",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T14:46:01.304350554Z",
+	"LastUpdated": "2026-03-03T15:28:10.064972478-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Business - Medium - Push Protection Bypass Disabled for New Repos",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "07486729-ae4e-4e14-96c1-e97cda884e40",
-	"UID": 1,
+	"ThingUUID": "1970f82b-2644-410d-b8b7-024c63a11c46",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

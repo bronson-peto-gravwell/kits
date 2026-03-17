@@ -1,7 +1,7 @@
 {
-	"UUID": "1eef0432-3f7d-446a-8be3-d1342fa4da75",
+	"UUID": "10abcf83-c1d0-43e1-a31c-9c0fd2f39a33",
 	"GUID": "3e79cd45-9ed8-4cf9-9574-97080203de5e",
-	"UID": 1,
+	"UID": 2,
 	"GIDs": [],
 	"Global": true,
 	"WriteAccess": {
@@ -14,7 +14,7 @@
 		"thinkst",
 		"canary"
 	],
-	"LastUpdated": "2025-09-11T15:46:27.356588672Z",
+	"LastUpdated": "2026-03-11T16:56:17.205924285Z",
 	"Author": {
 		"Name": "Gravwell",
 		"Email": "info@gravwell.io",

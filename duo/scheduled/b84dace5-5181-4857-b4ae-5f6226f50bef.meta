@@ -6,7 +6,7 @@
 	],
 	"Schedule": "30 * * * *",
 	"DefaultDeploymentRules": {
-		"Disabled": true,
+		"Disabled": false,
 		"RunImmediately": false
 	},
 	"ScheduledType": "flow",

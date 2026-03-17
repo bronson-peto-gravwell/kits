@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "e4aee921-de67-4f54-962d-35b9f665bdbb",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T14:47:43.343914128Z",
+	"LastUpdated": "2026-03-03T15:28:10.170789389-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Codespaces - Medium - Group Policy Deleted",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "4f80e28e-0ec7-495c-9717-654bf4dc2079",
-	"UID": 1,
+	"ThingUUID": "53d7f68a-2b96-44f3-a467-df293bc2e698",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

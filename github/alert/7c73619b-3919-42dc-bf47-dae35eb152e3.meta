@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "7c73619b-3919-42dc-bf47-dae35eb152e3",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T15:16:39.437440793Z",
+	"LastUpdated": "2026-03-03T15:28:10.164265879-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Repo - High - GitHub Advanced Security Disabled for a Repo",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "4b3519a1-0c2c-464b-ae18-5f3cb0729ca1",
-	"UID": 1,
+	"ThingUUID": "4d3eda6c-c8fb-4c8b-a629-df72e6e944b8",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

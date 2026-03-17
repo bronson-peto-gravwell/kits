@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "e3fee189-d9ab-4325-8de9-aa125a34bf8f",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T15:10:35.715668208Z",
+	"LastUpdated": "2026-03-03T15:28:10.358100885-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Org - Medium - Push Protection Bypass List Modified",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "ff7dda4e-5525-4791-9d2c-ae4e25c9a64e",
-	"UID": 1,
+	"ThingUUID": "b2972256-7249-4728-96f1-aefa9c74e152",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

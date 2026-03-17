@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "333d851a-2cb2-4d43-b716-83768f31d27e",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T15:31:49.867477173Z",
+	"LastUpdated": "2026-03-03T15:28:10.264247039-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Vuln - Medium - Vulnerability Alert Modified",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "eb7f7018-bb06-4968-a45c-de941aa755a8",
-	"UID": 1,
+	"ThingUUID": "82cac825-ec61-4fbe-881d-98a564c43c30",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

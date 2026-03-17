@@ -258,7 +258,10 @@
 					"y": 0
 				},
 				"searchesIndex": 8,
-				"rendererOptions": {}
+				"rendererOptions": {
+					"IncludeOther": "no",
+					"SortCategoricalAxisBy": "value"
+				}
 			},
 			{
 				"id": 17571032550549,
@@ -272,7 +275,10 @@
 					"y": 0
 				},
 				"searchesIndex": 9,
-				"rendererOptions": {}
+				"rendererOptions": {
+					"IncludeOther": "no",
+					"SortCategoricalAxisBy": "value"
+				}
 			},
 			{
 				"id": 175710341995710,
@@ -286,7 +292,10 @@
 					"y": 0
 				},
 				"searchesIndex": 10,
-				"rendererOptions": {}
+				"rendererOptions": {
+					"IncludeOther": "no",
+					"SortCategoricalAxisBy": "value"
+				}
 			}
 		],
 		"linkZooming": false,

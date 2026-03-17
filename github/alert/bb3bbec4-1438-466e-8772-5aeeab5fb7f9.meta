@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "bb3bbec4-1438-466e-8772-5aeeab5fb7f9",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T14:52:45.726281296Z",
+	"LastUpdated": "2026-03-03T15:28:10.439910793-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Migration - Medium - Data Transfer Created",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "f6bd11e7-af00-48fe-af81-196173d619e7",
-	"UID": 1,
+	"ThingUUID": "d874abea-76ff-4ae4-967c-05a662cf5b6c",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

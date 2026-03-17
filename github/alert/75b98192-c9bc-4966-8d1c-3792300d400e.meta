@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "75b98192-c9bc-4966-8d1c-3792300d400e",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T14:41:17.03143038Z",
+	"LastUpdated": "2026-03-03T15:28:10.102362438-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Business - High - GitHub Advanced Security for New Enterprise Repos Disabled",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "9e698c68-7bf4-469b-95ac-0ffdc7f067ed",
-	"UID": 1,
+	"ThingUUID": "2552c457-6b1d-47f7-93b6-345a01e85d12",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

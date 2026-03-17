@@ -1,7 +1,7 @@
 {
-	"UUID": "8c5a6845-9740-40e7-a055-589b61487ca7",
+	"UUID": "d2086c83-92d6-40aa-a5ad-16a97b81c61f",
 	"GUID": "8d838970-6b82-49ab-99d2-cc743b4d8dbf",
-	"UID": 1,
+	"UID": 2,
 	"GIDs": [],
 	"Global": true,
 	"WriteAccess": {
@@ -10,13 +10,15 @@
 	},
 	"Name": "Playbook - GitHub - Account - Medium - Plan Changed",
 	"Desc": "",
-	"Labels": ["github", "github"],
-	"LastUpdated": "2025-10-14T21:25:16.599657000Z",
+	"Labels": [
+		"github"
+	],
+	"LastUpdated": "2026-03-03T15:28:09.919391613-07:00",
 	"Author": {
 		"Name": "Gravwell",
 		"Email": "info@gravwell.io",
 		"Company": "Gravwell",
 		"URL": "gravwell.io"
 	},
-	"Synced": false
+	"Synced": true
 }

@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "515fba65-3625-4346-9042-777f5ce60197",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T15:21:09.208489751Z",
+	"LastUpdated": "2026-03-03T15:28:10.129144541-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Repo - Low - Invitation Actions",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "3c03938b-8bff-4b01-86a2-cb4838b722d1",
-	"UID": 1,
+	"ThingUUID": "33015471-cea8-4af3-979d-74e0fa41df32",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

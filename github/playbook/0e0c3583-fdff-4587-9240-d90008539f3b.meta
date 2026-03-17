@@ -1,7 +1,7 @@
 {
-	"UUID": "f3704973-3929-4eb4-a197-606b06b05848",
+	"UUID": "632e9315-b093-4643-b44e-5aca0391f8ff",
 	"GUID": "0e0c3583-fdff-4587-9240-d90008539f3b",
-	"UID": 1,
+	"UID": 2,
 	"GIDs": [],
 	"Global": true,
 	"WriteAccess": {
@@ -10,13 +10,15 @@
 	},
 	"Name": "Playbook - GitHub - Project - Medium - Delete Action Invoked",
 	"Desc": "",
-	"Labels": ["github", "github"],
-	"LastUpdated": "2025-10-14T21:25:16.610317000Z",
+	"Labels": [
+		"github"
+	],
+	"LastUpdated": "2026-03-03T15:28:09.821999049-07:00",
 	"Author": {
 		"Name": "Gravwell",
 		"Email": "info@gravwell.io",
 		"Company": "Gravwell",
 		"URL": "gravwell.io"
 	},
-	"Synced": false
+	"Synced": true
 }

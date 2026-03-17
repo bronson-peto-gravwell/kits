@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "6ec51ddb-91b5-401b-ab4d-df17f7d17f4e",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T15:02:55.775843259Z",
+	"LastUpdated": "2026-03-03T15:28:10.480808032-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Org - High - SAML (single sign-on) Disabled",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "e3ec1f80-f6f2-4125-8d3d-214e3bac3066",
-	"UID": 1,
+	"ThingUUID": "f7fdfd98-24dd-4991-8d51-c5834b6049e1",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

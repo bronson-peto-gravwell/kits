@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "ae8b2fc3-b11b-4b71-8041-5a2e192845d7",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T14:45:06.159807417Z",
+	"LastUpdated": "2026-03-03T15:28:10.424798912-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Business - Medium - Push Protection Bypass Disabled",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "ff9622b6-6feb-444e-b908-5bd24b64631e",
-	"UID": 1,
+	"ThingUUID": "ce1f577e-4c27-4512-8b02-925a413934c4",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

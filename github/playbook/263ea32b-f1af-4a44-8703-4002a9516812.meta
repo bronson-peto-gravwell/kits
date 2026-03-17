@@ -1,7 +1,7 @@
 {
-	"UUID": "a7b00423-7c49-482b-aecf-73f82402324b",
+	"UUID": "25dcdd7c-dbc9-4934-aef2-1f327425a5ec",
 	"GUID": "263ea32b-f1af-4a44-8703-4002a9516812",
-	"UID": 1,
+	"UID": 2,
 	"GIDs": [],
 	"Global": true,
 	"WriteAccess": {
@@ -10,13 +10,15 @@
 	},
 	"Name": "Playbook - GitHub - Org - High - SAML (single sign-on) Disabled",
 	"Desc": "",
-	"Labels": ["github", "github"],
-	"LastUpdated": "2025-10-14T21:25:16.607038000Z",
+	"Labels": [
+		"github"
+	],
+	"LastUpdated": "2026-03-03T15:28:09.759885334-07:00",
 	"Author": {
 		"Name": "Gravwell",
 		"Email": "info@gravwell.io",
 		"Company": "Gravwell",
 		"URL": "gravwell.io"
 	},
-	"Synced": false
+	"Synced": true
 }

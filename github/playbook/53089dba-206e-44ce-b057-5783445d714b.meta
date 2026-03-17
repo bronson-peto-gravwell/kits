@@ -1,7 +1,7 @@
 {
-	"UUID": "2a2f67e9-83c2-4737-b77f-b9cfb60caa10",
+	"UUID": "93fc006f-cc3b-48c3-bcb0-0d3f5abb8330",
 	"GUID": "53089dba-206e-44ce-b057-5783445d714b",
-	"UID": 1,
+	"UID": 2,
 	"GIDs": [],
 	"Global": true,
 	"WriteAccess": {
@@ -10,13 +10,15 @@
 	},
 	"Name": "Playbook - GitHub - Repo - Low - Private Forking Cleared",
 	"Desc": "",
-	"Labels": ["github", "github"],
-	"LastUpdated": "2025-10-14T21:25:16.613004000Z",
+	"Labels": [
+		"github"
+	],
+	"LastUpdated": "2026-03-03T15:28:09.86598843-07:00",
 	"Author": {
 		"Name": "Gravwell",
 		"Email": "info@gravwell.io",
 		"Company": "Gravwell",
 		"URL": "gravwell.io"
 	},
-	"Synced": false
+	"Synced": true
 }

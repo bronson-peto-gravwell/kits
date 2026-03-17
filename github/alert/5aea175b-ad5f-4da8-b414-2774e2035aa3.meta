@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "5aea175b-ad5f-4da8-b414-2774e2035aa3",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T14:44:13.801419295Z",
+	"LastUpdated": "2026-03-03T15:28:10.487803478-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Business - Low - New Org Added to Enterprise",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "89f11f44-c327-44d5-9ac1-aea319eaabe6",
-	"UID": 1,
+	"ThingUUID": "fefb9d88-62e6-446b-a5f7-27dec78a80a1",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

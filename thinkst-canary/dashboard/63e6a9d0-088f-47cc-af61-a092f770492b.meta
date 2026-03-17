@@ -232,7 +232,10 @@
 					"y": 0
 				},
 				"searchesIndex": 3,
-				"rendererOptions": {}
+				"rendererOptions": {
+					"IncludeOther": "no",
+					"SortCategoricalAxisBy": "value"
+				}
 			},
 			{
 				"id": 17563874831175,
@@ -260,7 +263,10 @@
 					"y": 4
 				},
 				"searchesIndex": 5,
-				"rendererOptions": {}
+				"rendererOptions": {
+					"IncludeOther": "no",
+					"SortCategoricalAxisBy": "value"
+				}
 			},
 			{
 				"id": 17564015574087,
@@ -274,7 +280,10 @@
 					"y": 4
 				},
 				"searchesIndex": 6,
-				"rendererOptions": {}
+				"rendererOptions": {
+					"IncludeOther": "no",
+					"SortCategoricalAxisBy": "value"
+				}
 			},
 			{
 				"id": 17564016001518,
@@ -288,7 +297,10 @@
 					"y": 4
 				},
 				"searchesIndex": 7,
-				"rendererOptions": {}
+				"rendererOptions": {
+					"IncludeOther": "no",
+					"SortCategoricalAxisBy": "value"
+				}
 			},
 			{
 				"id": 17564027693568,
@@ -302,7 +314,10 @@
 					"y": 10
 				},
 				"searchesIndex": 8,
-				"rendererOptions": {}
+				"rendererOptions": {
+					"IncludeOther": "no",
+					"SortCategoricalAxisBy": "value"
+				}
 			},
 			{
 				"id": 17564028357269,
@@ -316,7 +331,10 @@
 					"y": 10
 				},
 				"searchesIndex": 9,
-				"rendererOptions": {}
+				"rendererOptions": {
+					"IncludeOther": "no",
+					"SortCategoricalAxisBy": "value"
+				}
 			},
 			{
 				"id": 175640289270310,
@@ -330,7 +348,10 @@
 					"y": 10
 				},
 				"searchesIndex": 10,
-				"rendererOptions": {}
+				"rendererOptions": {
+					"IncludeOther": "no",
+					"SortCategoricalAxisBy": "value"
+				}
 			},
 			{
 				"id": 175640320214311,
@@ -344,7 +365,10 @@
 					"y": 10
 				},
 				"searchesIndex": 11,
-				"rendererOptions": {}
+				"rendererOptions": {
+					"IncludeOther": "no",
+					"SortCategoricalAxisBy": "value"
+				}
 			},
 			{
 				"id": 175640813494812,
@@ -358,7 +382,10 @@
 					"y": 4
 				},
 				"searchesIndex": 12,
-				"rendererOptions": {}
+				"rendererOptions": {
+					"IncludeOther": "no",
+					"SortCategoricalAxisBy": "value"
+				}
 			},
 			{
 				"id": 175648284610613,
@@ -372,7 +399,10 @@
 					"y": 0
 				},
 				"searchesIndex": 13,
-				"rendererOptions": {}
+				"rendererOptions": {
+					"IncludeOther": "no",
+					"SortCategoricalAxisBy": "value"
+				}
 			},
 			{
 				"id": 175648298239914,

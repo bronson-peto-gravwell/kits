@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "350fb478-aa9a-48a4-a221-0b0d7b7e5f1a",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T15:22:42.006910919Z",
+	"LastUpdated": "2026-03-03T15:28:10.139912261-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Repo - Low - New Secret Created",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "457d0b32-2305-4f83-8b4a-b0f166546161",
-	"UID": 1,
+	"ThingUUID": "3b71cd86-b476-4575-99b1-64fafff017b4",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

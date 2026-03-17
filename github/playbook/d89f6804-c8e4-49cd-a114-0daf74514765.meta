@@ -1,7 +1,7 @@
 {
-	"UUID": "a4df673d-5f5d-4af2-b870-8eda3683c603",
+	"UUID": "c7d1156b-be3e-4929-87c6-8e9b0d8d5642",
 	"GUID": "d89f6804-c8e4-49cd-a114-0daf74514765",
-	"UID": 1,
+	"UID": 2,
 	"GIDs": [],
 	"Global": true,
 	"WriteAccess": {
@@ -10,13 +10,15 @@
 	},
 	"Name": "Playbook - GitHub - Org - High - GitHub Advanced Security Configuration Changed",
 	"Desc": "",
-	"Labels": ["github", "github"],
-	"LastUpdated": "2025-10-14T21:25:16.605854000Z",
+	"Labels": [
+		"github"
+	],
+	"LastUpdated": "2026-03-03T15:28:09.911521224-07:00",
 	"Author": {
 		"Name": "Gravwell",
 		"Email": "info@gravwell.io",
 		"Company": "Gravwell",
 		"URL": "gravwell.io"
 	},
-	"Synced": false
+	"Synced": true
 }

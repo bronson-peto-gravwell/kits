@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "6645abe3-ef84-4325-bfd1-25d5845ad507",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T15:00:41.133477502Z",
+	"LastUpdated": "2026-03-03T15:28:10.146714194-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Org - High - Member Granted Owner Role",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "c6b375f2-cdb6-4182-821c-06d9209bee8b",
-	"UID": 1,
+	"ThingUUID": "3f1f6e01-6cb8-4be4-ae0e-f2c47f6da8a4",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

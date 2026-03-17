@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "d321b22f-cc72-4b37-9fdf-da65015023c3",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T14:59:23.165421091Z",
+	"LastUpdated": "2026-03-03T15:28:10.274750096-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Org - High - GitHub Advanced Security Configuration Changed",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "ef6160b6-2be4-4aa2-bf08-cc5af874ed09",
-	"UID": 1,
+	"ThingUUID": "8399f09b-1a37-46f6-9bba-ba94a6ffe9cc",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

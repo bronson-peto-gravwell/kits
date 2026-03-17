@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "4ca08313-5aff-4985-9938-2af62727d1b0",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T15:12:05.28928193Z",
+	"LastUpdated": "2026-03-03T15:28:10.150002801-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Org - Medium - Push Protection for Secret Scanning Disabled for New Repos",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "14d0ab47-75f8-491f-be8f-f452b3f1a75e",
-	"UID": 1,
+	"ThingUUID": "3fa8a40c-3389-4e3c-902f-5e237bf9308a",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

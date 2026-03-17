@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "02322077-d650-4ba3-b4ed-afe9e531db31",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T15:14:13.520765128Z",
+	"LastUpdated": "2026-03-03T15:28:10.047991502-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Org - Medium - SSH Certificate Requirement Disabled",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "4d30462d-21fc-477f-9f8c-c6e018e74b4b",
-	"UID": 1,
+	"ThingUUID": "0e6d21b1-a7b0-418d-9596-f6c928532039",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

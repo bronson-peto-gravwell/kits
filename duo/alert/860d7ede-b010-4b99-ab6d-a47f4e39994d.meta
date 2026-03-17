@@ -25,7 +25,7 @@
 	"Labels": [
 		"duo"
 	],
-	"LastUpdated": "2026-03-09T17:03:53.346819968Z",
+	"LastUpdated": "2026-03-09T20:08:32.274119684Z",
 	"MaxEvents": 16,
 	"Name": "Alert - Duo - System - Event Types - Modification Alerts [Jira Platform]",
 	"SaveSearchDuration": 604800,
@@ -86,8 +86,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts_duo",
-	"ThingUUID": "ed4bf2b9-dd46-46b3-bf92-bc63dcbb0f4d",
-	"UID": 1,
+	"ThingUUID": "5cc58b61-07fa-4e16-b0df-b7e2350676f6",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

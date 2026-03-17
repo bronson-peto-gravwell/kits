@@ -1,7 +1,7 @@
 {
-	"UUID": "68cbf1e8-4a17-4597-84c8-30354c3add4f",
+	"UUID": "63ba2a44-bdc2-4bfb-a538-c777ed69497b",
 	"GUID": "bf9e09db-a8dc-4700-a99e-a5fdc0f4bc37",
-	"UID": 1,
+	"UID": 2,
 	"GIDs": [],
 	"Global": true,
 	"WriteAccess": {
@@ -10,13 +10,15 @@
 	},
 	"Name": "Playbook - GitHub - Codespaces - Medium - Delete Action Invoked",
 	"Desc": "",
-	"Labels": ["github", "github"],
-	"LastUpdated": "2025-10-14T21:25:16.602956000Z",
+	"Labels": [
+		"github"
+	],
+	"LastUpdated": "2026-03-03T15:28:09.823719783-07:00",
 	"Author": {
 		"Name": "Gravwell",
 		"Email": "info@gravwell.io",
 		"Company": "Gravwell",
 		"URL": "gravwell.io"
 	},
-	"Synced": false
+	"Synced": true
 }

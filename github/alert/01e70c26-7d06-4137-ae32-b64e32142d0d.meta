@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "01e70c26-7d06-4137-ae32-b64e32142d0d",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T15:29:30.048077719Z",
+	"LastUpdated": "2026-03-03T15:28:10.473271177-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Repo - Medium - User Accepted Repo Transfer Request",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "09429bc5-9d53-446e-ad92-f602c77a24e3",
-	"UID": 1,
+	"ThingUUID": "f2f6a68f-1a36-4ecb-b88f-e29153a9ae4e",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

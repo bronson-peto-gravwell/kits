@@ -25,7 +25,7 @@
 	"Labels": [
 		"duo"
 	],
-	"LastUpdated": "2026-03-09T16:45:12.054963171Z",
+	"LastUpdated": "2026-03-09T20:08:32.275862825Z",
 	"MaxEvents": 16,
 	"Name": "Alert - Duo - System - Event Types - Modification Alerts [EMAIL]",
 	"SaveSearchDuration": 0,
@@ -86,8 +86,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts_duo",
-	"ThingUUID": "326ec5bf-c739-4c0e-952d-7dfc30db23f4",
-	"UID": 1,
+	"ThingUUID": "9143aa6a-40f0-40c9-85f2-59251ff2d594",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

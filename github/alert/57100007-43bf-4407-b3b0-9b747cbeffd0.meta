@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "57100007-43bf-4407-b3b0-9b747cbeffd0",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T13:18:13.048824962Z",
+	"LastUpdated": "2026-03-03T15:28:10.194145315-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Business - High - GitHub Advanced Security Disabled for New User Namespace Repos in Enterprise",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "b56b1255-58c9-4c09-8070-a9e98eb56dcf",
-	"UID": 1,
+	"ThingUUID": "606979eb-c6d5-4138-9e21-675457670e16",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

@@ -161,7 +161,10 @@
 					"y": 4
 				},
 				"searchesIndex": 3,
-				"rendererOptions": {}
+				"rendererOptions": {
+					"IncludeOther": "no",
+					"SortCategoricalAxisBy": "value"
+				}
 			},
 			{
 				"id": 17570995710584,
@@ -203,7 +206,10 @@
 					"y": 4
 				},
 				"searchesIndex": 6,
-				"rendererOptions": {}
+				"rendererOptions": {
+					"IncludeOther": "no",
+					"SortCategoricalAxisBy": "value"
+				}
 			},
 			{
 				"id": 17571002120547,

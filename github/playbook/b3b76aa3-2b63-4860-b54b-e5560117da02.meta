@@ -1,7 +1,7 @@
 {
-	"UUID": "2c997ff6-64f9-4813-887b-eb97111e990b",
+	"UUID": "e21d4de9-a1b6-408f-9be8-4cc76f66b7f7",
 	"GUID": "b3b76aa3-2b63-4860-b54b-e5560117da02",
-	"UID": 1,
+	"UID": 2,
 	"GIDs": [],
 	"Global": true,
 	"WriteAccess": {
@@ -10,13 +10,15 @@
 	},
 	"Name": "Playbook - GitHub - Org - Medium - Push Protection Bypass List Modified",
 	"Desc": "",
-	"Labels": ["github", "github"],
-	"LastUpdated": "2025-10-14T21:25:16.609152000Z",
+	"Labels": [
+		"github"
+	],
+	"LastUpdated": "2026-03-03T15:28:09.935484767-07:00",
 	"Author": {
 		"Name": "Gravwell",
 		"Email": "info@gravwell.io",
 		"Company": "Gravwell",
 		"URL": "gravwell.io"
 	},
-	"Synced": false
+	"Synced": true
 }

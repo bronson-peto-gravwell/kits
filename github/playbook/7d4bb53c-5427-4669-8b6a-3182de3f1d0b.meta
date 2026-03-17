@@ -1,7 +1,7 @@
 {
-	"UUID": "386581c6-f5c0-4efc-9d41-a164facc72b3",
+	"UUID": "a524e7d7-d732-4b72-a24b-5c31098bb30b",
 	"GUID": "7d4bb53c-5427-4669-8b6a-3182de3f1d0b",
-	"UID": 1,
+	"UID": 2,
 	"GIDs": [],
 	"Global": true,
 	"WriteAccess": {
@@ -10,13 +10,15 @@
 	},
 	"Name": "Playbook - GitHub - Repo - Low - New Runner Registered",
 	"Desc": "",
-	"Labels": ["github", "github"],
-	"LastUpdated": "2025-10-14T21:25:16.612517000Z",
+	"Labels": [
+		"github"
+	],
+	"LastUpdated": "2026-03-03T15:28:09.887646671-07:00",
 	"Author": {
 		"Name": "Gravwell",
 		"Email": "info@gravwell.io",
 		"Company": "Gravwell",
 		"URL": "gravwell.io"
 	},
-	"Synced": false
+	"Synced": true
 }

@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "ad578ae3-1ee6-45e0-95de-78630a4757c9",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T15:01:23.39279605Z",
+	"LastUpdated": "2026-03-03T15:28:10.246511673-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Org - High - OAuth Restrictions Disabled",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "00571b84-f22d-4924-9b23-246e9e8054e4",
-	"UID": 1,
+	"ThingUUID": "77caa81d-c70f-48e1-a04b-f728903934be",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

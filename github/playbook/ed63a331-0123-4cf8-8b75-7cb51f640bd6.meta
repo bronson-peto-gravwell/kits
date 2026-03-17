@@ -1,7 +1,7 @@
 {
-	"UUID": "6c4edf35-ec41-4c8c-8978-afb78f81391c",
+	"UUID": "576a2e0f-f844-4bee-9ab3-676ebfaaf726",
 	"GUID": "ed63a331-0123-4cf8-8b75-7cb51f640bd6",
-	"UID": 1,
+	"UID": 2,
 	"GIDs": [],
 	"Global": true,
 	"WriteAccess": {
@@ -10,13 +10,15 @@
 	},
 	"Name": "Playbook - GitHub - Repo - Medium - Repo Transferred to Another Repo Network",
 	"Desc": "",
-	"Labels": ["github", "github"],
-	"LastUpdated": "2025-10-14T21:25:16.614684000Z",
+	"Labels": [
+		"github"
+	],
+	"LastUpdated": "2026-03-03T15:28:09.808114825-07:00",
 	"Author": {
 		"Name": "Gravwell",
 		"Email": "info@gravwell.io",
 		"Company": "Gravwell",
 		"URL": "gravwell.io"
 	},
-	"Synced": false
+	"Synced": true
 }

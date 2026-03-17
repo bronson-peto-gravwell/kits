@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "436ebb92-ea60-4c6d-a13b-e7d6f66691e2",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T15:13:20.864360632Z",
+	"LastUpdated": "2026-03-03T15:28:10.309733562-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Org - Medium - SSH Certificate Authority Changed",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "4c12ff1a-66f4-480a-bfb3-40d825ffe449",
-	"UID": 1,
+	"ThingUUID": "a851c448-47c8-472b-81be-bc3e49401f78",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

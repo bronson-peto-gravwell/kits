@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "3a714b42-a02d-4a24-8c6e-8fc01c225ea8",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T15:23:27.826769135Z",
+	"LastUpdated": "2026-03-03T15:28:10.414042832-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Repo - Low - Private Forking Cleared",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "b5067e72-eace-491c-9087-4a88e9af410e",
-	"UID": 1,
+	"ThingUUID": "cb574731-844e-4c91-ad50-617006b84dad",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

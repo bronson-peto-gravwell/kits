@@ -179,7 +179,10 @@
 					"y": 8
 				},
 				"searchesIndex": 1,
-				"rendererOptions": {}
+				"rendererOptions": {
+					"IncludeOther": "no",
+					"SortCategoricalAxisBy": "value"
+				}
 			},
 			{
 				"id": 17571047366722,
@@ -193,7 +196,10 @@
 					"y": 8
 				},
 				"searchesIndex": 2,
-				"rendererOptions": {}
+				"rendererOptions": {
+					"IncludeOther": "no",
+					"SortCategoricalAxisBy": "value"
+				}
 			},
 			{
 				"id": 17571047988253,
@@ -207,7 +213,10 @@
 					"y": 8
 				},
 				"searchesIndex": 0,
-				"rendererOptions": {}
+				"rendererOptions": {
+					"IncludeOther": "no",
+					"SortCategoricalAxisBy": "value"
+				}
 			},
 			{
 				"id": 17571049265853,
@@ -221,7 +230,10 @@
 					"y": 14
 				},
 				"searchesIndex": 3,
-				"rendererOptions": {}
+				"rendererOptions": {
+					"IncludeOther": "no",
+					"SortCategoricalAxisBy": "value"
+				}
 			},
 			{
 				"id": 17571049697024,
@@ -235,7 +247,10 @@
 					"y": 14
 				},
 				"searchesIndex": 4,
-				"rendererOptions": {}
+				"rendererOptions": {
+					"IncludeOther": "no",
+					"SortCategoricalAxisBy": "value"
+				}
 			},
 			{
 				"id": 17571051139765,
@@ -333,7 +348,10 @@
 					"y": 0
 				},
 				"searchesIndex": 11,
-				"rendererOptions": {}
+				"rendererOptions": {
+					"IncludeOther": "no",
+					"SortCategoricalAxisBy": "value"
+				}
 			},
 			{
 				"id": 175710566286412,

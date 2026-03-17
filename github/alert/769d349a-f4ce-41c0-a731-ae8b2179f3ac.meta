@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "769d349a-f4ce-41c0-a731-ae8b2179f3ac",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T14:57:34.569589388Z",
+	"LastUpdated": "2026-03-03T15:28:10.465364417-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Org - High - Dependabot Security Updates Disabled for Any New Repos",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "efb69f6a-ce2d-4638-9a2e-dc12d8eb155e",
-	"UID": 1,
+	"ThingUUID": "f1fb2391-6fc5-4949-a844-401223ef3ada",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

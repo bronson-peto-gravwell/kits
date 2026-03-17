@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "e0a09726-06e4-4392-9096-92934f9d835c",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T15:15:04.69491443Z",
+	"LastUpdated": "2026-03-03T15:28:10.227908184-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Project - Medium - Delete Action Invoked",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "55e664af-188f-40b4-b0dc-0b05c534680d",
-	"UID": 1,
+	"ThingUUID": "6e26b7ac-f2f3-4ac6-99c2-1c517ace0b58",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

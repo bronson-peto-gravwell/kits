@@ -1,7 +1,7 @@
 {
-	"UUID": "4158efd8-766f-4d9f-a127-2156f88a0af3",
+	"UUID": "422bb668-942f-4b33-859a-ae7da306015e",
 	"GUID": "7b35ba6d-8610-4b30-be37-3323bf40f1a7",
-	"UID": 1,
+	"UID": 2,
 	"GIDs": [],
 	"Global": true,
 	"WriteAccess": {
@@ -10,13 +10,15 @@
 	},
 	"Name": "Playbook - GitHub - Repo - High - Repo changed from Private to Public",
 	"Desc": "",
-	"Labels": ["github", "github"],
-	"LastUpdated": "2025-10-14T21:25:16.611115000Z",
+	"Labels": [
+		"github"
+	],
+	"LastUpdated": "2026-03-03T15:28:09.790031134-07:00",
 	"Author": {
 		"Name": "Gravwell",
 		"Email": "info@gravwell.io",
 		"Company": "Gravwell",
 		"URL": "gravwell.io"
 	},
-	"Synced": false
+	"Synced": true
 }

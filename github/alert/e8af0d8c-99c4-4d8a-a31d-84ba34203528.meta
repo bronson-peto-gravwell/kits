@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "e8af0d8c-99c4-4d8a-a31d-84ba34203528",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T14:53:37.004549334Z",
+	"LastUpdated": "2026-03-03T15:28:10.119145191-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Repo - High - Force Push",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "5a80bf7d-dbd5-4ce8-9565-4aeb1b18435e",
-	"UID": 1,
+	"ThingUUID": "2fcc630f-4088-4f4a-9637-fe730b783382",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

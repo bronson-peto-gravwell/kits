@@ -1,7 +1,7 @@
 {
-	"UUID": "9fb7d510-5315-46e5-b0c9-1eebb58e7068",
+	"UUID": "e43d56a2-36d7-49b9-a644-9f0ebc54b9a7",
 	"GUID": "21c64288-7ae4-400a-a27b-5f4297680d79",
-	"UID": 1,
+	"UID": 2,
 	"GIDs": [],
 	"Global": true,
 	"WriteAccess": {
@@ -10,13 +10,15 @@
 	},
 	"Name": "Playbook - GitHub - Business - High - GitHub Advanced Security for Enterprise Disabled",
 	"Desc": "",
-	"Labels": ["github", "github"],
-	"LastUpdated": "2025-10-14T21:25:16.600913000Z",
+	"Labels": [
+		"github"
+	],
+	"LastUpdated": "2026-03-03T15:28:09.939927099-07:00",
 	"Author": {
 		"Name": "Gravwell",
 		"Email": "info@gravwell.io",
 		"Company": "Gravwell",
 		"URL": "gravwell.io"
 	},
-	"Synced": false
+	"Synced": true
 }

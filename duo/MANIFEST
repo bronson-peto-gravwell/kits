@@ -2,7 +2,7 @@
 	"ID": "io.gravwell.duo",
 	"Name": "Duo",
 	"Desc": "The Duo Kit provides a baseline set of tags, macros, saved queries, lookup resources, alerts, scheduled searches, flows, playbooks, actionables, dashboard searches, alert queries, and dashboards for your Duo data.",
-	"Readme": "***\n\nA toolkit for interacting with Duo data in Gravwell. This kit includes queries, resources (lookups), templates, autoextractors, macros, dashboards, alerts, scheduled searches, and flows to help streamline Duo analysis across Activity, Authentication, Administrator, Telephony, and Offline Enrollment log sources.\n\n***\n\n## Table of Contents\n0. [Data Ingestion](#0-data-ingestion)  \n1. [Tags \u0026 Macros](#1-tags--macros)  \n    1.1. [Tags](#1-1-tags)  \n    1.2. [Autoextractors](#1-2-autoextractors)  \n    1.3. [Macros](#1-3-macros)  \n2. [Query Library](#2-query-library)  \n3. [Naming Schema](#3-naming-schema)  \n4. [Resources](#4-resources)  \n    4.1. [Lookups](#4-1-lookups)  \n5. [Alerts](#5-alerts)  \n    5.1 [Dispatchers](#5-1-dispatchers)  \n    5.2 [Consumers](#5-2-consumers)\n6. [Scheduled Searches](#6-scheduled-searches)  \n\t6.1. [Flows](#6-1-flows)\n7. [Playbooks](#7-playbooks)  \n8. [Searches](#8-searches)  \n\t8.1. [Alert Queries](#8-1-alert-queries) \n9. [Templates](#9-templates)  \n10. [Dashboards](#10-dashboards)  \n\t10.1 [Actionables](#10-1-actionables)\n11. [Useful Resources \u0026 References](#11-useful-resources--references)  \n12. [Notes](#12-notes)  \n13. [Image credits](#13-image-credits)  \n\n## 0. [Data Ingestion](#0-data-ingestion)\nI used the [Gravwell Fetcher] (https://github.com/gravwell/gravwell/blob/main/experiments/gravwell_fetcher/README.md) for data ingestion. \n\nBelow is a quick reference list of the resources used.\n- [Gravwell Fetcher](https://github.com/gravwell/gravwell/blob/main/experiments/gravwell_fetcher/README.md): A powerful data fetcher ingester for Gravwell that collects data from various security and productivity services including Duo, Duo, Okta, and Asana.\n- [Example Fetcher Config](https://github.com/gravwell/gravwell/blob/main/experiments/gravwell_fetcher/gravwell_fetcher.conf.example): The fetcher uses a configuration file (gravwell_fetcher.conf) to manage its settings. This is a detailed explanation of all configuration options.\n- [duo.go](https://github.com/gravwell/gravwell/blob/main/experiments/gravwell_fetcher/duo.go): This file implements the Config definitions and parsing from duoConfig.go when you build Fetcher.\n- [duoConfig.go](https://github.com/gravwell/gravwell/blob/main/experiments/gravwell_fetcher/duoConfig.go): This file defines the configuration data structures and parsing for the Duo integrations in Fetcher.\n\n***\n\n## 0.1 Download, Install and Configure the Gravwell Fetcher\n\n**Summary:** The Gravwell Fetcher provides a lightweight Go-based fetcher that polls external APIs (including Duo endpoints) and ingests events into Gravwell. \nThe Fetcher includes an [example configuration file] (https://github.com/gravwell/gravwell/blob/main/experiments/gravwell_fetcher/gravwell_fetcher.conf.example) which you need to copy and adapt for your environment prior to running the fetcher. See the [README] (https://github.com/gravwell/gravwell/blob/main/experiments/gravwell_fetcher/README.md) for further information. \n\n### Basic installation steps (example)\n\n1. Clone the Gravwell repo (or just the Fetcher):  \n    _git clone https://github.com/gravwell/gravwell.git_  \n\n2. Change directory to the Gravwell Fetcher:  \n    _cd gravwell/experiments/gravwell\\_fetcher_\n  \n3. Build the fetcher binary (standard Go build):  \n    _go build -o gravwell\\_fetcher_\n  \n4. Copy the example config to a location you will edit  \n    e.g. /etc/gravwell/gravwell\\_fetcher.conf or /opt/gravwell/etc/gravwell\\_fetcher.conf:  \n_cp gravwell\\_fetcher.conf.example /etc/gravwell/gravwell\\_fetcher.conf_\n\n5. Edit _/etc/gravwell/gravwell\\_fetcher.conf_ and replace the Duo Domain and Token values (see example below).  \n\n6. Run the fetcher (from the built binary).  \n    Typical invocation (binary + config file):  \n    _./gravwell\\_fetcher -config /etc/gravwell/gravwell\\_fetcher.conf_\n\n**Important:** the canonical example config shipped with the Gravwell Fetcher is gravwell_fetcher.conf.example — copy it and update the values.\n\n2.1 Example Gravwell Fetcher Conf (repo)\n- The repository contains _experiments/gravwell\\_fetcher/gravwell\\_fetcher.conf.example_ which is the canonical example used by this kit. Use that file as the starting point and replace the Duo Domain, Token, and any Ingester/connection settings as appropriate.  \n\n2.2 Gravwell Fetcher Example Config for Duo  \n\t\n```ini\n    [Global]  \n\tIngester-UUID=\"00000000-0000-0000-0000-0000000000\"  \n\tConnection-Timeout = 0  \n\tInsecure-Skip-TLS-Verify=false  \n\t#Cleartext-Backend-Target=127.0.0.1:4023  \n\t#Encrypted-Backend-Target=127.1.1.1:4024  \n\t#Pipe-Backend-Target=/opt/gravwell/comms/pipe  \n\t#Ingest-Cache-Path=/opt/gravwell/cache/duo.cache  \n\t#Max-Ingest-Cache=1024  \n\tLog-Level=INFO  \n\tLog-File=/opt/gravwell/log/duo_fetcher.log  \n    \n    [DuoConf \"duo-activity\"]\n        StartTime=\"2025-01-01T00:00:01.000Z\"\n        Domain=\"api-XXXXXXXX.duosecurity.com\"\n        Key=\"REPLACE_WITH_YOUR_DUO_KEY\"\n        Secret=\"REPLACE_WITH_YOUR_DUO_SECRET\"\n        DuoAPI=\"activity\"\n        Tag-Name=\"duo-activity\"\n    \n    [DuoConf \"duo-admin\"]\n        StartTime=\"2025-01-01T00:00:01.000Z\"\n        Domain=\"api-XXXXXXXX.duosecurity.com\"\n        Key=\"REPLACE_WITH_YOUR_DUO_KEY\"\n        Secret=\"REPLACE_WITH_YOUR_DUO_SECRET\"\n        DuoAPI=\"admin\"\n        Tag-Name=\"duo-admin\"\n\n    [DuoConf \"duo-auth\"]\n        StartTime=\"2025-01-01T00:00:01.000Z\"\n        Domain=\"api-XXXXXXXX.duosecurity.com\"\n        Key=\"REPLACE_WITH_YOUR_DUO_KEY\"\n        Secret=\"REPLACE_WITH_YOUR_DUO_SECRET\"\n        DuoAPI=\"authentication\"\n        Tag-Name=\"duo-auth\" \n    \n    [DuoConf \"duo-offline-enrollment\"]\n        StartTime=\"2025-01-01T00:00:01.000Z\"\n        Domain=\"api-XXXXXXXX.duosecurity.com\"\n        Key=\"REPLACE_WITH_YOUR_DUO_KEY\"\n        Secret=\"REPLACE_WITH_YOUR_DUO_SECRET\"\n        DuoAPI=\"offline-enrollment\"\n        Tag-Name=\"duo-offline-enrollment\" \n    \n    [DuoConf \"duo-telephony\"]\n        StartTime=\"2025-01-01T00:00:01.000Z\"\n        Domain=\"api-XXXXXXXX.duosecurity.com\"\n        Key=\"REPLACE_WITH_YOUR_DUO_KEY\"\n        Secret=\"REPLACE_WITH_YOUR_DUO_SECRET\"\n        DuoAPI=\"telephony\"\n        Tag-Name=\"duo-telephony\"\n```\n\t\n***\n\n## 1. [Tags \u0026 Macros](#1-tags--macros)\n#### 1.1. [Tags](#1-1-tags)\n- Purpose: Tags are an essential Gravwell concept. Every entry has a single tag associated with it; these tags allow us to separate and categorize data at a basic level.\n- [Documentation](https://docs.gravwell.io/ingesters/ingesters.html#tags)\n- The Duo Kit for Gravwell makes use of the following tags:  \n    - duo-activity: Tag contains Duo Activity log data.  \n        - Usage:  \n        `tag=duo-activity`\n    - duo-admin: Tag contains Duo Administrator log data.  \n        - Usage:  \n        `tag=duo-admin`\n    - duo-auth: Tag contains Duo Authentication log data.  \n        - Usage:  \n        `tag=duo-auth`\n    - duo-offline-enrollment: Tag contains Duo Offline Enrollment log data.  \n        - Usage:  \n        `tag=duo-offline-enrollment`\n    - duo-telephony: Tag contains Duo Telephony log data.  \n        - Usage:  \n        `tag=duo-telephony`    \n\n#### 1.2. [Autoextractors](#1-2-autoextractors)\n- Purpose: Auto-extractors are simply definitions that can be applied to tags and describe how to correctly extract fields from the data in a given tag. The “ax” module then automatically invokes the appropriate functionality of other modules.\n- [Documentation](https://docs.gravwell.io/configuration/autoextractors.html)\n- The Duo Kit for Gravwell makes use of the following autoextractors \n- Total: ***5***\n    - duo-activity: Gravwell generated JSON extraction for tag duo-activity\n    - duo-admin: Gravwell generated JSON extraction for tag duo-admin\n    - duo-auth: Gravwell generated JSON extraction for tag duo-auth\n    - duo-offline-enrollment:Gravwell generated JSON extraction for tag duo-offline-enrollment\n    - duo-telephony: Gravwell generated JSON extraction for tag duo-telephony    \n\n#### 1.3. [Macros](#1-3-macros)\n- Purpose: Search macros are a powerful feature that can help you use Gravwell more effectively. Macros can turn long, repetitive search queries into easily-remembered shortcuts.\n- [Documentation](https://docs.gravwell.io/search/macros.html)\n- The Duo Kit for Gravwell makes use of the following macros:\n- Total: ***31***\n    - Tags\n        - $DUO: Configuration Macro; Tag used for all Duo data; necessary for any queries within the Gravwell Duo Kit to run properly for dashboards, query library, and templates.\n            - Usage: `tag=$DUO`\n        - $DUO\\_ACTIVITY: Configuration Macro; Tag used for Duo Activity data; necessary for any queries within the Gravwell Duo Kit to run properly for dashboards, query library, and templates.\n            - Usage: `tag=$DUO_ACTIVITY`\n            - Reference(s): [Duo Activity Logs](https://duo.com/docs/adminapi#activity-logs)\n        - $DUO\\_ADMIN: Configuration Macro; Tag used for Duo Admin data; necessary for any queries within the Gravwell Duo Kit to run properly for dashboards, query library, and templates.\n            - Usage: `tag=$DUO_ADMIN`\n            - Reference(s): [Duo Administrator Logs](https://duo.com/docs/adminapi#administrator-logs)\n        - $DUO\\_AUTH: Configuration Macro; Tag used for Duo Authentication data; necessary for any queries within the Gravwell Duo Kit to run properly for dashboards, query library, and templates.\n            - Usage: `tag=$DUO_AUTH`\n            - Reference(s): [Duo Authentication Logs](https://duo.com/docs/adminapi#authentication-logs)\n        - $DUO\\_OFF\\_ENROLL: Configuration Macro; Tag used for all Duo Offline Enrollment data; necessary for any queries within the Gravwell Duo Kit to run properly for dashboards, query library, and templates.\n            - Usage: `tag=$DUO_OFFLINE_ENROLLMENT`\n            - Reference(s): [Duo Offline Enrollment Logs](https://duo.com/docs/adminapi#offline-enrollment-logs)\n        - $DUO\\_TELEPHONY: Configuration Macro; Tag used for all Duo Telephony data; necessary for any queries within the Gravwell Duo Kit to run properly for dashboards, query library, and templates.\n            - Usage: `tag=$DUO_TELEPHONY`\n            - Reference(s): [Duo Telephony Logs](https://duo.com/docs/adminapi#telephony-logs)\n    - EVX (Enumerated Value Extraction)\n        - $DUO\\_EVX: This macro extracts all possible Enumerated Values (EVs) from all Duo Logs.\n            - Usage: `tag=$DUO $DUO_EVX`\n        - $DUO\\_ACTIVITY\\_EVX: This macro extracts all possible Enumerated Values (EVs) from Duo Activity Logs.\n            - Usage: `tag=$DUO_ACTIVITY $DUO_ACTIVITY_EVX`\n            - Reference(s): [Duo Activity Logs](https://duo.com/docs/adminapi#activity-logs)\n        - $DUO\\_ADMIN\\_EVX: This macro extracts all possible Enumerated Values (EVs) from Duo Admin Logs.\n            - Usage: `tag=$DUO_ADMIN $DUO_ADMIN_EVX`\n            - Reference(s): [Duo Administrator Logs](https://duo.com/docs/adminapi#administrator-logs)\n        - $DUO\\_AUTH\\_EVX: This macro extracts all possible Enumerated Values (EVs) from Duo Authentication Logs.\n            - Usage: `tag=$DUO_AUTH $DUO_AUTH_EVX`\n            - Reference(s): [Duo Authentication Logs](https://duo.com/docs/adminapi#authentication-logs)\n        - $DUO\\_OFF\\_ENROLL\\_EVX: This macro extracts all possible Enumerated Values (EVs) from Duo Offline Enrollment Logs.\n            - Usage: `tag=$DUO_OFF_ENROLL $DUO_OFF_ENROLL_EVX`\n            - Reference(s): [Duo Offline Enrollment Logs](https://duo.com/docs/adminapi#offline-enrollment-logs)\n        - $DUO\\_OFF\\_ENROLL\\_DESC\\_EVX: This macro extracts all possible subfield (user_agent as enrollUserAgent, hostname as enrollHost, \u0026 factor as enrollFactor) Enumerated Values (EVs) from description EV in Duo Offline Enrollment Logs. This is intended to be used only with \"ax\" extractions.\n            - Usage: `tag=$DUO_OFF_ENROLL ax DUO_OFF_ENROLL_DESC_EVX`\n            - Reference(s): [Duo Offline Enrollment Logs](https://duo.com/docs/adminapi#offline-enrollment-logs)         \n        - $DUO\\_TELEPHONY\\_EVX: This macro extracts all possible Enumerated Values (EVs) from Duo Telephony Logs.\n            - Usage: `tag=$DUO_TELEPHONY $DUO_TELEPHONY_EVX`\n            - Reference(s): [Duo Telephony Logs](https://duo.com/docs/adminapi#telephony-logs)        \n    - Normalization\n        - $DUO\\_NORMALIZE\\_ACTOR: This macro normalizes actorEmail and actorName into a new EV named actor that is used to search both fields for a specific actor.\n            - Usage: `tag=$DUO $DUO_EVX $DUO_NORMALIZE_ACTOR | grep -e actor \"*\"`\n        - $DUO\\_NORMALIZE\\_EMAIL: This macro normalizes authEmail (Duo Authentication Logs), and adminEmail (Duo Admin Logs) into 1 Enumerated Value (EV) named email.\n            - Usage: `tag=$DUO $DUO_EVX $DUO_NORMALIZE_EMAIL`\n            - IMPORTANT: It must be run after $DUO, and $DUO_EVX. Please Note: It can be used in conjunction with any of the other \"NORMALIZE\" macros.\n        - $DUO\\_NORMALIZE\\_EVENTTYPE: This macro normalizes event_type (Duo Authentication Logs), actionName (Duo Activity Logs), context (Duo Telephony Logs), and action (Duo Admin and Duo Offline Enrollment Logs) into 1 Enumerated Value (EV) named eventType.\n            - Usage: `tag=$DUO $DUO_EVX $DUO_NORMALIZE_EVENTTYPE`\n            - ***IMPORTANT***: It must be run after $DUO, and $DUO_EVX. Please Note: It can be used in conjunction with any of the other \"NORMALIZE\" macros.\n        - $DUO\\_NORMALIZE\\_OUTCOME: This macro normalizes authResult (Duo Authentication Logs), activityResult (Duo Activity Logs), adminAction (Duo Admin Logs), context (Duo Telephony Logs), and action (Duo Offline Enrollment Logs) into 1 Enumerated Value (EV) named outcome.\n            - Usage: `tag=$DUO $DUO_EVX $DUO_NORMALIZE_OUTCOME`\n            - IMPORTANT: It must be run after $DUO, and $DUO_EVX. Please Note: It can be used in conjunction with any of the other \"NORMALIZE\" macros.\n        - $DUO\\_NORMALIZE\\_SRC\\_IP: This macro normalizes accessIP/authIP (Duo Authentication Logs), activityIP (Duo Activity Logs), and adminIP (Duo Admin) into 1 Enumerated Value (EV) named src_ip.\n            - Usage: `tag=$DUO $DUO_EVX $DUO_NORMALIZE_SRC_IP`\n            - ***IMPORTANT***: It must be run after $DUO, and $DUO_EVX. Please Note: It can be used in conjunction with any of the other \"NORMALIZE\" macros.\n        - $DUO\\_NORMALIZE\\_TARGET: This macro normalizes targetEmail and targetName into a new EV named target that is used to search both fields for a specific target.\n            - Usage: `tag=$DUO $DUO_EVX $DUO_NORMALIZE_TARGET | grep -e target \"*\"`\n        - $DUO\\_NORMALIZE\\_TXID: This macro normalizes txid (Duo Authentication Logs), activity_id (Duo Activity Logs), actor (Duo Admin Logs), and txid (Duo Telephony and Duo Offline Enrollment Logs) into 1 Enumerated Value (EV) named transactionId.\n            - Usage: `tag=$DUO $DUO_EVX $DUO_NORMALIZE_ACTOR $DUO_NORMALIZE_TXID`\n            - IMPORTANT: It must be run after $DUO, and $DUO_EVX. Please Note: It can be used in conjunction with any of the other \"NORMALIZE\" macros.\n    - Alert Components\n        - Alert Base\n            - $DUO\\_ALERT\\_BASE: This is the base of which all alerts are built upon. This is necessary for the rest of the actual alerting logic to occur due to the Enumerated Value Extraction (EVX), EV enrichment and normalization performed by the dependencies listed below. Dependencies: $DUO\\_EVX; $DUO\\_ALERT\\_ENRICH.\n            - $DUO\\_ALERT\\_ENRICH: This is a dependency as a part of the $DUO_ALERT_BASE which all alerts are built upon. This is necessary for the rest of the actual alerting logic to occur due to the Enumerated Value enrichment and normalization performed by the macro. Dependencies: Resource Lookups: duo\\_eventTypes, duo\\_privileged\\_actor, duo\\_protected\\_target.\n        - Risk\n            - $DUO\\_RISK\\_SCORE: This rule dynamically calculates an Duo risk score based on event type, category, subcategory, modifications, and outcome for modification event types. This is a dependency as a part of the $DUO_MOD_ALERT which all modification event type alerts are built upon. It calculates a risk score based on the event type, category, and subcategory with bumps for outcome, modification event types, privileged \u0026 protected users then dumps it into a priority bucket.\n        - Tuning\n            - $DUO\\_TUNE\\_IP: Provides tuning for IP addresses (actor/target) using duo\\_ip\\_allowlist and duo\\_ip\\_denylist.\n            - $DUO\\_TUNE\\_USER: Provides tuning for users (actor/target) using duo\\_user\\_allowlist and duo\\_user\\_denylist.\n        - Reporting \u0026 Searching\n            - $DUO\\_ALERT\\_RECIPIENT: Configuration Macro: This is the address to which Duo Alert Flows will be sent to. Email Server Settings must be configured under Account \u003e Email Server \u003e Email Server Settings in order for your alerts to function properly.\n            - $DUO\\_ALERT\\_SENDER: Configuration Macro: This is the address to which Duo Alert Flows will be sent from. Email Server Settings must be configured under Account \u003e Email Server \u003e Email Server Settings in order for your alerts to function properly.\n            - $GRAVWELL\\_INSTANCE: Configuration Macro; Necessary for url links within emails generated by alerts \u0026 flows within the Duo Kit to run properly.; https://\u003cchange\\_me\\_to\\_your\\_specific\\_url\u003e:\u003cchange\\_to\\_your\\_specific\\_port\u003e\n            - $DUO\\_ALERT\\_META: This macro standardizes output for Duo Alerts that are being alerted upon. It dynamically changes values in the \\_alert\\_title based on the core of the query. \n            - $DUO\\_ALERT\\_TABLE: This macro standardizes output for Duo Alerts that are being alerted upon. It dynamically changes values in the \\_alert\\_title based on the core of the query. \n        - Alert Queries \u0026 Scheduled Searches\n            - $DUO\\_MOD\\_ALERT: Detects modification alerts that are configured within the duo\\_eventTypes lookup resource.\n        \n***\n\n## 2. [Query Library](#2-query-library)\n- Purpose: Queries within the Query Library drive [dashboards](#10-dashboards) via [searches](#8-searches), [scheduled searches](#6-scheduled-searches) via [alert queries](#8-1-alert-queries), and [playbooks](#7-playbooks).\n- [Documentation](https://docs.gravwell.io/gui/querylibrary/querylibrary.html)\n\t- Updating a query in the library updates dependent dashboards and scheduled searches automatically.\n\t- Total queries: ***19***\n        - [Alert Queries](#8-1-alert-queries): ***1***\n        - [Searches](#8-searches): ***18***\n\n***\n\n## 3. [Naming Schema](#3-naming-schema)\n- Purpose: The use of a standard naming convention enables users to quickly understand the function, severity, and context of a query or component. This approach facilitates efficient identification, reuse, and troubleshooting without ambiguity.\n- _QueryType - Company - Category/Logtype - Subcategory/Log Subtype - Severity/Priority - Name [Visualization - **if any**]_\n- Examples:\n    - Dashboards: _Dashboard - Duo - System - Overview_\n    - Templates: _Template - Duo - System - Event Types - Category [chart]_\n    - Searches: _Search - Duo - Activity - User Country [numbercard]_\n    - Alerts: _Alert - Duo - System - Event Types - High - Modification Alerts [EMAIL]_\n\n***\n\n## 4. [Resources](#4-resources)\n- Purpose: Resources allow users to store persistent data for use in searches.\n- [Documentation](https://docs.gravwell.io/resources/resources.html)\n\n#### 4.1 [Lookups](#4-1-lookups)\n- Purpose: Lookup Resources are used by the lookup module to perform data enrichment and translation off of a static lookup table stored in a resource.\n- [Documentation](https://docs.gravwell.io/search/lookup/lookup.html)\n- Total: ***11***\n    - duo\\_activity\\_evx\\_enrichment\n        - This is intended to be used as a lookup file providing additional information regarding Duo Activity event types.\n        - Fields: category, subcategory, ev, preEVX, description, value, value_description\n        - Usage: `dump -r duo_activity_evx_enrichment | table`\n    - duo\\_admin\\_evx\\_enrichment\n        - This is intended to be used as a lookup file providing additional information regarding Duo Admin event types.\n        - Fields: category, subcategory, ev, preEVX, description, value, value_description\n        - Usage: `dump -r duo_admin_evx_enrichment | table`\n    - duo\\_auth\\_evx\\_enrichment\n        - This is intended to be used as a lookup file providing additional information regarding Duo Authentication event types.\n        - Fields: category, subcategory, ev, preEVX, description, value, value_description\n        - Usage: `dump -r duo_auth_evx_enrichment | table`\n    - duo\\_eventType\\_risk\n        - This is intended to be used as a lookup file providing additional information regarding Duo event types. It is used within the Duo Kit for dashboards, macros, scheduled searches, alerts, flows, and templates.\n        - Fields: tag, log\\_source, category, subcategory, preEVX, evx, value, description, is\\_mod, risk\\_score, \\_priority\n        - Usage: `dump -r duo_eventType_risk | table`\n    - duo\\_eventTypes\n        - This is intended to be used as a lookup file providing additional information regarding Duo event types. It is used within the Duo Kit for dashboards, macros, scheduled searches, alerts, flows, and templates.\n        - Fields: tag, log\\_source, category, subcategory, preEVX, evx, value, description, is\\_mod\n        - Usage: `dump -r duo_eventTypes | table`\n    - duo\\_ip\\_allowlist\n        - Provides a tuning control to suppress alerts from known-good source IPs (resolved from clientIp, else requestIp), per alert or globally, with optional expiry.\n        - Fields: key, enabled, until\\_ymd, reason, owner\n        - Key format: \u003cip\u003e|\u003calert_name_or_*\u003e\n        - Usage: `$DUO_ALERT_BASE $DUO_RISK_SCORE $DUO_TUNE_IP $DUO_TUNE_USER $DUO_ALERT_META $DUO_ALERT_TABLE`\n    - duo\\_ip\\_denylist\n        - Provides a tuning control to force-include or escalate alerts for watchlisted source IPs, optionally only when risk_score \u003e= min_risk, per alert or globally.\n        - Fields: key, enabled, min\\_risk, reason, owner\n        - Key format: \u003cip\u003e|\u003calert_name_or_*\u003e\n        - Usage: `$DUO_ALERT_BASE $DUO_RISK_SCORE $DUO_TUNE_IP $DUO_TUNE_USER $DUO_ALERT_META $DUO_ALERT_TABLE`\n    - duo\\_privileged\\_actor\n        - Provides a tuning opportunity for monitoring High Privileged Actor Accounts and weigh their severity/priority differently compared to an end user without system, domain, root, etc. permissions within the environment.\n        - Fields: account, actor\\_weight, actor\\_label, notes\n        - Usage: `$DUO_ALERT_BASE $DUO_RISK_SCORE $DUO_TUNE_IP $DUO_TUNE_USER $DUO_ALERT_META $DUO_ALERT_TABLE`\n    - duo\\_protected\\_target\n        - Provides a tuning opportunity for monitoring High Privileged Target Accounts and weigh their severity/priority differently compared to an end user without system, domain, root, etc. permissions within the environment.\n        - Fields: account, target\\_weight, target\\_label, notes\n        - Usage: `$DUO_ALERT_BASE $DUO_RISK_SCORE $DUO_TUNE_IP $DUO_TUNE_USER $DUO_ALERT_META $DUO_ALERT_TABLE`\n    - duo\\_user\\_allowlist\n        - Provides a tuning control to suppress known-benign alerts for specific users (actor or target), either for a single alert name or globally, with optional expiry.\n        - Fields: key, enabled, until_ymd, reason, owner\n        - Key format: \u003cnormalized_user\u003e|\u003calert_name_or_*\u003e\n        - Usage: `$DUO_ALERT_BASE $DUO_RISK_SCORE $DUO_TUNE_IP $DUO_TUNE_USER $DUO_ALERT_META $DUO_ALERT_TABLE`\n    - duo\\_user\\_denylist\n        - Provides a tuning control to force-include or escalate alerts for specific users, optionally only when risk_score \u003e= min_risk, per alert or globally.\n        - Fields: key, enabled, min_risk, reason, owner\n        - Key format: \u003cnormalized_user\u003e|\u003calert_name_or_*\u003e\n        - Usage: `$DUO_ALERT_BASE $DUO_RISK_SCORE $DUO_TUNE_IP $DUO_TUNE_USER $DUO_ALERT_META $DUO_ALERT_TABLE`\n\n***\n\n## 5. [Alerts](#5-alerts)\n- Purpose: Alerts notify you of potential nefarious actions that took place within and/or against your environment by tying dispatchers and consumers together.\n- [Documentation](https://docs.gravwell.io/alerts/alerts.html#alerts)\n- Total: ***3***\n    - Alert - Duo - System - Event Types - Modification Alerts [EMAIL]\n    - Alert - Duo - System - Event Types - Modification Alerts [Jira Service Management]\n    - Alert - Duo - System - Event Types - Modification Alerts [Jira Platform]\n- Naming Schema: _Alert - Duo - Category/Logtype - Subcategory/Log Subtype - Severity/Priority - AlertName_\n\n#### 5.1 [Dispatchers](#5-1-dispatchers)\n- Purpose: Dispatchers generate events. A typical dispatcher would be a scheduled search that runs on an interval; every result returned by a scheduled search is considered an event.\n    - Dispatchers = [Scheduled Searches](#6-scheduled-searches)\n- [Documentation](https://docs.gravwell.io/alerts/alerts.html#adding-dispatchers)\n\n#### 5.2 [Consumers](#5-2-consumers)\n- Purpose: Consumers process and respond to events. A typical consumer would be a flow that sends an email to an administrator, or opens a ticket in the ticketing system. Each consumer runs once per event.\n    - Consumers = [Flows](#6-1-flows)\n- [Documentation](https://docs.gravwell.io/alerts/alerts.html#defining-a-consumer)\n\n***\n\n## 6. [Scheduled Searches](#6-scheduled-searches)\n- Purpose: Scheduled Searches are typically dependent on “AlertQuery - Duo - …” queries within the [Query Library](#2-query-library).\n- [Documentation](https://docs.gravwell.io/scripting/scheduledsearch.html)\n- Total: ***1***\n    - ScheduledSearch - Duo - System - Event Types - Modification Alerts: Detects modification alerts that are configured within the duo\\_eventTypes lookup resource. \n- Naming Schema: _ScheduledSearch - Duo - Category/Logtype - Subcategory/Log Subtype - Severity/Priority - ScheduledSearchName_\n    - Cron schedule: 30 * * * *\n\n#### 6.1. [Flows](#6-1-flows)\n- Purpose: Flows provide a no-code method for developing advanced automations in Gravwell.\n- [Documentation](https://docs.gravwell.io/flows/flows.html)\n- Total: ***3***\n    - Flow - Duo - System - Event Types - Modification Alerts [EMAIL]: This Flow is intended as a template to send Duo Modification Alerts from $DUO\\_ALERT\\_SENDER to $DUO\\_ALERT\\_RECIPIENT.\n    - Flow - Duo - System - Event Types - Modification Alerts [Jira Service Management]: This Flow is intended as a template to send Duo Modification Alerts over to your instance of Jira Service Management (JSM).\n    - Flow - Duo - System - Event Types - Modification Alerts [Jira Platform]: This Flow is intended as a template to send Duo Modification Alerts over to your specified project on Jira Platform.\n***\n\n## 7. [Playbooks](#7-playbooks)\n- Purpose: Playbooks are hypertext documents within Gravwell which help guide users through common tasks, describe functionality, and record information about data in the system.\n- [Documentation](https://docs.gravwell.io/gui/playbooks/playbooks.html)\n- Total: ***1***\n    - Duo Kit for Gravwell - README\n- Naming Schema: _Playbook - Duo - Category/Logtype - Subcategory/Log Subtype - Severity/Priority - PlaybookName_\n\n***\n\n## 8. [Searches](#8-searches)\n- Purpose: These queries within the Query Library drive [dashboards](#10-dashboards) to quickly view Duo data in an easily digestible format.\n- [Documentation](https://docs.gravwell.io/gui/querylibrary/querylibrary.html)\n- Total: ***18***\n\t- Search - Duo - Activity - User City [chart]: Displays a chart of the user's City by count.\n\t- Search - Duo - Activity - User City [numbercard]: Displays a numbercard of the user's City by count.\n    - Search - Duo - Activity - User City [table]: Displays a table of the user's City by count.\n\t- Search - Duo - Activity - User Country [chart]: Displays a chart of the user's Country by count.\n\t- Search - Duo - Activity - User Country [numbercard]: Displays a numbercard of the user's Country by count.\n    - Search - Duo - Activity - User Country [table]: Displays a table of the user's Country by count.\n\t- Search - Duo - Activity - User State [chart]: Displays a chart of the user's State by count.\n\t- Search - Duo - Activity - User State [numbercard]: Displays a numbercard of the user's State by count.\n    - Search - Duo - Activity - User State [table]: Displays a table of the user's State by count.\n\t- Search - Duo - System - Event Types - Count by Category [chart]: Detects a chart of event types by category. \n\t- Search - Duo - System - Event Types - Count by Category [table]: Detects a table of event types by category. \n\t- Search - Duo - System - Event Types - Count by Category, Subcategory [chart]: Detects a chart of event types by category, and subcategory. \n\t- Search - Duo - System - Event Types - Count by Category, Subcategory [table]: Detects a table of event types by category, and subcategory. \n\t- Search - Duo - System - Event Types - Count by Category, Subcategory, Event Type [chart]: Detects a chart of event types by category, subcategory, and event type. \n\t- Search - Duo - System - Event Types - Count by Category, Subcategory, Event Type [table]: Detects a table of event types by category, subcategory, and event type. \n\t- Search - Duo - System - Event Types - Count by Tag [chart]: This will display the amount of events consumed by Duo Tag in a pie chart over the specified timeframe. \n\t- Search - Duo - System - Event Types - Count by Tag [table]: This will display the amount of events consumed by Duo Tag in a table over the specified timeframe. \n    - Search - Duo - System - Event Types - Modification Alerts by Priority [numbercard]: Displays a numbercard of by Priority (_alert_priority).\n- Naming Schema: _Search - Duo - Category/Logtype - Subcategory/Log Subtype - Severity/Priority - SearchName [Visualization - **if any**]_\n\n#### 8.1. [Alert Queries](#8-1-alert-queries)\n- Alert Queries feed [Scheduled Searches](#6-scheduled-searches)\n- IMPORTANT: If you need to update or tune, this is where you perform that action.\n- Total: ***1***\n    - AlertQuery - Duo - System - Event Types - Modification Alerts: Detects modification alerts that are configured within the duo\\_eventTypes lookup resource. \n- Naming Schema: _AlertQuery - Duo - Category/Logtype - Subcategory/Log Subtype - Severity/Priority - AlertName_\n\n***\n\n## 9. [Templates](#9-templates)\n- Purpose: Templates are special objects which define a Gravwell query containing variables.\n- [Documentation](https://docs.gravwell.io/gui/templates/templates.html)\n- Total: ***14***\n\t- Template - Duo - MFA - Activity - User Activity [table]: This displays a table of all User Activity for the specified User, IP Address, and Location.\n\t- Template - Duo - MFA - Administrator - Admin Actions [table]: This displays a table o all Administrator Actions for the specified User, and IP Address.\n\t- Template - Duo - MFA - Authentication - User Auth [table]: This displays a table of all User Authentications for the specified User, IP Address, and Location.\n\t- Template - Duo - MFA - Offline Enrollment - Enrollment Actions [table]: This displays a table of all Enrollment Actions for the specified User.\n\t- Template - Duo - System - Event Types - Category [chart]: Detects a chart of event types by category. \n\t- Template - Duo - System - Event Types - Category [table]: Detects a table of event types by category. \n\t- Template - Duo - System - Event Types - Category, Subcategory [chart]: Detects a chart of event types by category, and subcategory. \n\t- Template - Duo - System - Event Types - Category, Subcategory [table]: Detects a table of event types by category, and subcategory. \n\t- Template - Duo - System - Event Types - Category, Subcategory, Event Type [chart]: Detects a chart of event types by category, subcategory, and event type. \n\t- Template - Duo - System - Event Types - Category, Subcategory, Event Type [table]: Detects a table of event types by category, subcategory, and event type. \n\t- Template - Duo - System - Event Types - Modification Alerts by Location [numbercard]: Displays a numbercard by Location (src_ip).\n\t- Template - Duo - System - Event Types - Modification Alerts by Priority [numbercard]: Displays a numbercard of by Priority (_alert_priority).\n\t- Template - Duo - System - Event Types - Modification Alerts by Source IP Address [numbercard]: Displays a numbercard by Source IP Address (src_ip).\n\t- Template - Duo - System - Event Types - Modification Alerts by User [numbercard]: Displays a numbercard by username (actor/actorName/target/targetName/oldTargetName).\n\n***\n\n## 10. [Dashboards](#10-dashboards)\n- Purpose: Dashboards are Gravwell’s way of showing the results from multiple searches at the same time.\n- [Documentation](https://docs.gravwell.io/gui/dashboards/dashboards.html)\n- Total: ***4***\n\t- Duo User Location Overview: This Dashboard is a general overview of your Duo User Location data.\n\t- Duo General Overview: This Dashboard is a general overview of your Duo Category, Subcategory, and Event Type data.\n\t- Duo Investigation: This Dashboard is intended to be used for Duo investigations.\n\t- Duo Category Overview: This Dashboard is a general overview of your Duo Category, Subcategory, and Event Type data based on the inputted variable.\n\n#### 10.1 [Actionables](#10-1-actionables)\n- Purpose: Actionables provide a way to create custom menus that key on any text rendered in a query; users can take different actions on that text by selecting options in the menus.\n- [Documentation](https://docs.gravwell.io/gui/actionables/actionables.html)\n- Total: ***3***\n    - Duo Target: Duo Actions on Target to Launch Duo Investigation Dashboard.\n    - Duo Actor: Duo Actions on Actor to Launch Duo Investigation Dashboard.\n    - Duo IP: Duo Actions on IP Addresses to Launch Duo Investigation Dashboard.\n\n***\n\n## 11. [Useful Resources \u0026 References](#11-useful-resources--references)\n- Gravwell\n\t- [Gravwell Fetcher](https://github.com/gravwell/gravwell/blob/main/experiments/gravwell_fetcher/README.md)\n\t- [Example Fetcher Config](https://github.com/gravwell/gravwell/blob/main/experiments/gravwell_fetcher/gravwell_fetcher.conf.example)\n\t- [duo.go](https://github.com/gravwell/gravwell/blob/main/experiments/gravwell_fetcher/duo.go)\n\t- [duoConfig.go](https://github.com/gravwell/gravwell/blob/main/experiments/gravwell_fetcher/duoConfig.go)\n\t- [Tags](https://docs.gravwell.io/ingesters/ingesters.html#tags)\n\t- [Autoextractors](https://docs.gravwell.io/configuration/autoextractors.html)\n\t- [Macros](https://docs.gravwell.io/search/macros.html)\n\t- [Query Library](https://docs.gravwell.io/gui/querylibrary/querylibrary.html)\n\t- [Resources](https://docs.gravwell.io/resources/resources.html)\n\t- [Lookups](https://docs.gravwell.io/search/lookup/lookup.html)\n\t- [Alerts](https://docs.gravwell.io/alerts/alerts.html#alerts)\n\t- [Dispatchers](https://docs.gravwell.io/alerts/alerts.html#adding-dispatchers)\n\t- [Consumers](https://docs.gravwell.io/alerts/alerts.html#defining-a-consumer)\n\t- [Scheduled Searches](https://docs.gravwell.io/scripting/scheduledsearch.html)\n\t- [Flows](https://docs.gravwell.io/flows/flows.html)\n\t- [Playbooks](https://docs.gravwell.io/gui/playbooks/playbooks.html)\n\t- [Searches](https://docs.gravwell.io/gui/querylibrary/querylibrary.html)\n\t- [Templates](https://docs.gravwell.io/gui/templates/templates.html)\n\t- [Dashboards](https://docs.gravwell.io/gui/dashboards/dashboards.html)\n\t- [Actionables](https://docs.gravwell.io/gui/actionables/actionables.html)\n- Duo\n    - [Duo Admin API](https://duo.com/docs/adminapi)\n    - [Activity Logs](https://duo.com/docs/adminapi#activity-logs)\n    - [Administrator Logs](https://duo.com/docs/adminapi#administrator-logs)\n    - [Authentication Logs](https://duo.com/docs/adminapi#authentication-logs)\n    - [Offline Enrollment Logs](https://duo.com/docs/adminapi#offline-enrollment-logs)\n    - [Telephony Logs](https://duo.com/docs/adminapi#telephony-logs)\n\n***\n\n## 12. [Notes](#12-notes)\n\n***\n\n## 13. [Image credits](#13-image-credits)\n- [Duo](https://help.duo.com/s/article/2213?language=en_US)\n- Duo images are wholly owned by Duo and distributed according to the [Duo Deployment Signage](https://help.duo.com/s/article/2213?language=en_US) and are **NOT** subject to any Gravwell licensing.\n\n***",
+	"Readme": "",
 	"Version": 1,
 	"MinVersion": {
 		"Major": 0,
@@ -10,8 +10,8 @@
 		"Point": 0
 	},
 	"MaxVersion": {
-		"Major": 5,
-		"Minor": 99,
+		"Major": 0,
+		"Minor": 0,
 		"Point": 0
 	},
 	"Icon": "5637d8b1-015b-44c8-b06f-5e44057437dd",
@@ -21,497 +21,502 @@
 		{
 			"Name": "Apache 2.0 License",
 			"Type": 10,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "duo_protected_target",
-			"Type": 1,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "duo_user_denylist",
-			"Type": 1,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "duo_auth_evx_enrichment",
-			"Type": 1,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "duo_ip_allowlist",
-			"Type": 1,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "duo_privileged_actor",
-			"Type": 1,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "59899c6091b540582ed617e8eeaac4919dc985ccfc35459ee9752b699be5205b"
 		},
 		{
 			"Name": "duo_eventTypes",
 			"Type": 1,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "d63372a63e7bf96eb645fe6077e2b65e24c458c3f55d9f53fc61a3cf7f970a9c"
 		},
 		{
-			"Name": "duo_user_allowlist",
+			"Name": "duo_ip_allowlist",
 			"Type": 1,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "duo_ip_denylist",
-			"Type": 1,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "duo_admin_evx_enrichment",
-			"Type": 1,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "duo_eventType_risk",
-			"Type": 1,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "25ddee6fea55a8c784d5b7dbe828463cac5425ec3ebedb1d699cd3a88901fe0b"
 		},
 		{
 			"Name": "duo_activity_evx_enrichment",
 			"Type": 1,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "766c68e7e63e40012ed4e1122987b24d628d047524d28eb6244f20bace342d4c"
+		},
+		{
+			"Name": "duo_user_denylist",
+			"Type": 1,
+			"Hash": "45c16d9672a259be93b0da79725e5b4ab0ce44c78cf04f3e100b8ff8f108c071"
+		},
+		{
+			"Name": "duo_privileged_actor",
+			"Type": 1,
+			"Hash": "c9dcc4a9ab693710c6c9582e26ce2b6b5afca459b96228197cd52681d7e412b3"
+		},
+		{
+			"Name": "duo_admin_evx_enrichment",
+			"Type": 1,
+			"Hash": "67b78687c1c70189dc1e659585356827a9cd36a3b64e4448cddca4add1bed181"
+		},
+		{
+			"Name": "duo_auth_evx_enrichment",
+			"Type": 1,
+			"Hash": "4b98fbfe0074c21f5947e2776e882eb1dda57ff1906e2eeae9b8ac3cbd9fdaaa"
+		},
+		{
+			"Name": "duo_protected_target",
+			"Type": 1,
+			"Hash": "a4a525673f5f4949ebad16c825e8ed8efaf1dd6b67a136a002aab6afda5ee5ec"
+		},
+		{
+			"Name": "duo_user_allowlist",
+			"Type": 1,
+			"Hash": "a81608d7e9be62c979d79dcf645d9739ae1c7aa3d3ef906b60bfcce53645e3e1"
+		},
+		{
+			"Name": "duo_ip_denylist",
+			"Type": 1,
+			"Hash": "38c63023471f5fe2071b9af9f52d277e2f4a46658ef42aa2b9210ef7b601657e"
+		},
+		{
+			"Name": "duo_eventType_risk",
+			"Type": 1,
+			"Hash": "171edef4cfdbb9a246a5ebee61757c138a5933438cff0ec527de66dec49700ff"
 		},
 		{
 			"Name": "6b3ba27c-ee57-46a3-ba88-c5d838cec230",
 			"Type": 2,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "23530a3bd165de96345bf066fae2e7aa23456656fea5eb7a8cca5f48265c2116"
 		},
 		{
 			"Name": "0d7ce2e7-fc5f-4bde-91df-5d7c5dc2574f",
 			"Type": 2,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "b84dace5-5181-4857-b4ae-5f6226f50bef",
-			"Type": 2,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "27c79f09f1618493b17cc3fcd08e41e2ff9bb86d251f0fdbd51d3090b4110f45"
 		},
 		{
 			"Name": "ab68d669-95ba-458b-ac1a-7f632571585f",
 			"Type": 2,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "38c7f5f2bb7789f0c2b73ef06b692d378e7081e7b7f5aa18f708a8060b6e235d"
 		},
 		{
-			"Name": "DUO_NORMALIZE_EMAIL",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_NORMALIZE_TARGET",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_NORMALIZE_OUTCOME",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_ACTIVITY_EVX",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_ADMIN_EVX",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_TUNE_IP",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_AUTH_EVX",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Name": "b84dace5-5181-4857-b4ae-5f6226f50bef",
+			"Type": 2,
+			"Hash": "815bd059e8d4e5b8bdd5540d531d47cd379d214efa9354e3b7fc35bfd8b8a195"
 		},
 		{
 			"Name": "DUO_ALERT_META",
 			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_ALERT_BASE",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_AUTH",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_OFF_ENROLL",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_ALERT_TABLE",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_NORMALIZE_TXID",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_NORMALIZE_ACTOR",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "GRAVWELL_INSTANCE",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_ALERT_ENRICH",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_OFF_ENROLL_EVX",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_TELEPHONY_EVX",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_MOD_ALERT",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_TUNE_USER",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_RISK_SCORE",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "922e9055ab73cb9aacfb4ee220be9e59b9708cefc3e3a72de1402a5599d77386"
 		},
 		{
 			"Name": "DUO_ADMIN",
 			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_OFF_ENROLL_DESC_EVX",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_ACTIVITY",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_NORMALIZE_SRC_IP",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_EVX",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_NORMALIZE_EVENTTYPE",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_ALERT_SENDER",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "DUO_ALERT_RECIPIENT",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "856b3baf85f8efd3e83d9971e324d5e3d158402101f78413eec095d83ed7221a"
 		},
 		{
 			"Name": "DUO_TELEPHONY",
 			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "02e9a175ce635396db4abf5a3cd8285fe711a8ee42ae3c3695f13189cfcd503e"
 		},
 		{
-			"Name": "c960bdd4-0754-4144-aa63-93cf03ee1b6c",
-			"Type": 3,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Name": "DUO_AUTH",
+			"Type": 8,
+			"Hash": "e9014e241c3feb34a71206e0f4529c6b350dcc6b45ea7860294a33821983f484"
 		},
 		{
-			"Name": "c0639ccf-68ef-4173-a765-8237a418a3bc",
-			"Type": 3,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Name": "DUO_NORMALIZE_TXID",
+			"Type": 8,
+			"Hash": "7985e98e1a629b4c32e429c17e9609258a6d0998a93bfa898a34db978cbf232f"
 		},
 		{
-			"Name": "ae028c54-5965-47ff-b178-14b285c40bcf",
-			"Type": 3,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Name": "DUO_ALERT_RECIPIENT",
+			"Type": 8,
+			"Hash": "9fbd176efd68ef2310b3a8fbb551ad74e3dc3c695be6d6c8d8fc615cf50afc71"
+		},
+		{
+			"Name": "DUO_TUNE_IP",
+			"Type": 8,
+			"Hash": "185ae9dfd0d2621f3bbfe02d446dcf54a5ab487bb5d2812b247d8163401fbb19"
+		},
+		{
+			"Name": "DUO_ALERT_TABLE",
+			"Type": 8,
+			"Hash": "7a38349c06f526ce506b11e565754f6f65d13a0979e804f958a743f44d33c72a"
+		},
+		{
+			"Name": "DUO_ACTIVITY_EVX",
+			"Type": 8,
+			"Hash": "c1761fd3460759031394271d030d51bfc14005d0daba9b22ecfa1ee6d5aac5db"
+		},
+		{
+			"Name": "DUO_NORMALIZE_EMAIL",
+			"Type": 8,
+			"Hash": "ab7fc776af4e7f86a63633daceac231b2c03d70a26d56225cd3bbc23cdbb33a2"
+		},
+		{
+			"Name": "DUO_NORMALIZE_EVENTTYPE",
+			"Type": 8,
+			"Hash": "5238b997d5ba3e93e086a47a8cf53483649c8e258b3345b5be590ecaf69f6e0e"
+		},
+		{
+			"Name": "DUO_TELEPHONY_EVX",
+			"Type": 8,
+			"Hash": "3df9d9a331f447fb1397c393e3dd9ad2266a8e474e24fba08e8a92e8bcba3e1c"
+		},
+		{
+			"Name": "DUO_OFF_ENROLL_EVX",
+			"Type": 8,
+			"Hash": "87ae51f517ca919341c84460d96b1daef62971c35bd554633e99a011ef768341"
+		},
+		{
+			"Name": "DUO_ACTIVITY",
+			"Type": 8,
+			"Hash": "dc947befc22d7c68894772aff1c411facc969de5cf47ca7626ca23d481530067"
+		},
+		{
+			"Name": "DUO_ALERT_BASE",
+			"Type": 8,
+			"Hash": "17261d76909e431cc84d20126528db5a679a52d3d715f3039648edb42d7b34e6"
+		},
+		{
+			"Name": "DUO_OFF_ENROLL_DESC_EVX",
+			"Type": 8,
+			"Hash": "c2fdc0fbde1fc9b7b1dd0ce88e55af36cdf2374a65596e4a39a947c6cfebfd05"
+		},
+		{
+			"Name": "DUO_AUTH_EVX",
+			"Type": 8,
+			"Hash": "4540624bc64000927965abca90838a5c6c005ce9d1ff255bbecd39845214cc68"
+		},
+		{
+			"Name": "DUO_OFF_ENROLL",
+			"Type": 8,
+			"Hash": "160fe4603e88a297ce02741c6b2e0a065a54983851dfd57937476dd1aa705c69"
+		},
+		{
+			"Name": "DUO_RISK_SCORE",
+			"Type": 8,
+			"Hash": "2098f54ac9991cccfe433cb7dac82a7c9c648d165d99cbbf23caabb70d2b2e1d"
+		},
+		{
+			"Name": "DUO_NORMALIZE_TARGET",
+			"Type": 8,
+			"Hash": "45c117597bfbc5e887fe7e75f2e9686aeddecf7e3d260a1916dbd45e6ef9b16b"
+		},
+		{
+			"Name": "DUO_NORMALIZE_OUTCOME",
+			"Type": 8,
+			"Hash": "cdb19424cdc9f106775354a56310e1bb90615ebd935316481358f5217c376395"
+		},
+		{
+			"Name": "DUO_MOD_ALERT",
+			"Type": 8,
+			"Hash": "382cc2e7f39e1ca83a72c960f96ec374ca3eaea53cc790e6c0405784420e4939"
+		},
+		{
+			"Name": "DUO_TUNE_USER",
+			"Type": 8,
+			"Hash": "400472d456fbccf76073dd82b12f096bdee5817a6086e5e67f4f658eadc86662"
+		},
+		{
+			"Name": "DUO_NORMALIZE_SRC_IP",
+			"Type": 8,
+			"Hash": "7d3eef58612da1353325aed2ca5820666bf951a3c00bbd2175b97166f7ef5ff9"
+		},
+		{
+			"Name": "DUO_NORMALIZE_ACTOR",
+			"Type": 8,
+			"Hash": "bf7eeff9bedecad7b496f210c48db4432d9ec6b2951b8c3262a11c11929854e6"
+		},
+		{
+			"Name": "DUO_EVX",
+			"Type": 8,
+			"Hash": "ba242a525982cbc2e851715835b355cd5064cba380115cde8554abf1d9e7b2ad"
+		},
+		{
+			"Name": "DUO",
+			"Type": 8,
+			"Hash": "62535a46095cfaee8af47503ca350a9462270a95d080ff2d7335d4eb22c50d68"
+		},
+		{
+			"Name": "DUO_ADMIN_EVX",
+			"Type": 8,
+			"Hash": "d98aedab309bb60ace767cca61ee034616856767d1271ae3bf75c83d11d1fb89"
+		},
+		{
+			"Name": "DUO_ALERT_SENDER",
+			"Type": 8,
+			"Hash": "2c752958d9b7e53e8a0acf317f57b3e30359427bc72901a31046110d01a24865"
+		},
+		{
+			"Name": "DUO_ALERT_ENRICH",
+			"Type": 8,
+			"Hash": "5726782697ad330a7b4a8e56e87a14bc5da919b565b0826ae8e2e0b5ff61905c"
 		},
 		{
 			"Name": "bce4d3ab-5b0c-434d-8ec9-df755000aaa1",
 			"Type": 3,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "e2b48a745e123976b08798b2b7cbdf7d21b8489e3d5aab2ff682c978ec0bd260"
 		},
 		{
-			"Name": "c5df98e9-2d2c-4427-ad0f-8a988a1efe09",
-			"Type": 6,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Name": "ae028c54-5965-47ff-b178-14b285c40bcf",
+			"Type": 3,
+			"Hash": "05646ead5f32343743e282bd5b5c2f654b23ce0ef8b338a28255d1ba147db769"
 		},
 		{
-			"Name": "826a5942-535e-403f-bc07-e4af4fe07aac",
-			"Type": 6,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Name": "c960bdd4-0754-4144-aa63-93cf03ee1b6c",
+			"Type": 3,
+			"Hash": "49ee3a1388bbd2a81d41f760bd8cb6cf4799c995635c7f3883209ab6cb80e5d6"
 		},
 		{
-			"Name": "7df4b0ca-ddce-40b6-a59e-9f7ec36577ea",
-			"Type": 6,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "fb20ca7e-e907-4636-8e02-16d704c9e43c",
-			"Type": 6,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "627f5d4c-b536-40dc-b074-44d35dcba836",
-			"Type": 6,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "f1a5c508-806f-4dbc-b645-26a0daf9596a",
-			"Type": 6,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "f107384c-155a-4b90-8a84-05845ee7e366",
-			"Type": 6,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "fd59999a-7f7a-458a-8fb0-65078e3f47f9",
-			"Type": 6,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "e7f48cb5-9769-4384-ad06-25b7de5f7b6c",
-			"Type": 6,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "ed92d07d-2598-40ba-81cd-e80b57b58b65",
-			"Type": 6,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "cc227a2e-3675-4eab-a03d-04093d937ce7",
-			"Type": 6,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Name": "c0639ccf-68ef-4173-a765-8237a418a3bc",
+			"Type": 3,
+			"Hash": "897e0da6da06b5256d4b957ebdd15e5a23961e1e3febc7605acfb9e065eb7102"
 		},
 		{
 			"Name": "f4b8ad2a-06ad-455f-84a4-569863194a4e",
 			"Type": 6,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "99a8b53913b3eaef8d581c4a5e59c0ccbdf6f4affb6b207c21147286a5d45b62"
+		},
+		{
+			"Name": "826a5942-535e-403f-bc07-e4af4fe07aac",
+			"Type": 6,
+			"Hash": "ab11c69480c03d28c3cce49bc6814fecb62ac7f91de01f5edd33f7141577d555"
+		},
+		{
+			"Name": "7df4b0ca-ddce-40b6-a59e-9f7ec36577ea",
+			"Type": 6,
+			"Hash": "ca0bf523bfcfa37ad27f4d53943d1734e56b1f5de342e6dd9f7ff1c451cc53ee"
+		},
+		{
+			"Name": "e7f48cb5-9769-4384-ad06-25b7de5f7b6c",
+			"Type": 6,
+			"Hash": "29e774a410d96d374516702221e0161ec0b0182aed7995c51af20a6d778bac62"
 		},
 		{
 			"Name": "d3771a11-c238-4593-992b-6bb5d61b3f6a",
 			"Type": 6,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "0b6c592b9e5ce568e5d25aa6717e1906d28b51fa85713c554bfc849e33d06657"
+		},
+		{
+			"Name": "f107384c-155a-4b90-8a84-05845ee7e366",
+			"Type": 6,
+			"Hash": "2449adf0f48464b67dabcfcd5928e62aef437268abf3e86027ff1369786ed110"
+		},
+		{
+			"Name": "fb20ca7e-e907-4636-8e02-16d704c9e43c",
+			"Type": 6,
+			"Hash": "3cfabadd9ea05798f0a3451b790a5f107f6130958a3c66d13a6bf6d7ce30b170"
+		},
+		{
+			"Name": "ed92d07d-2598-40ba-81cd-e80b57b58b65",
+			"Type": 6,
+			"Hash": "59ad8b8c71f9ee7a8ebe07112db1f4ffa69d17431d86513fef9c38ef97f59927"
+		},
+		{
+			"Name": "f1a5c508-806f-4dbc-b645-26a0daf9596a",
+			"Type": 6,
+			"Hash": "25247f183a8bc407110b37a1ed928eb50734e34c0eff3840d01d0990cfd9834e"
+		},
+		{
+			"Name": "c5df98e9-2d2c-4427-ad0f-8a988a1efe09",
+			"Type": 6,
+			"Hash": "483d9e4ccf0d6a5c5417a7fcdad04becc5b0fb1a48c48cd37dc0783d79e3f3ee"
 		},
 		{
 			"Name": "4398e728-e7af-434c-96f1-8a632d12e201",
 			"Type": 6,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "9f5d32b627350b1b323a1724815297d5c8c21049a5ea34a97ac89ebb8b024db0"
 		},
 		{
-			"Name": "6ca9a26e-9114-4b1d-8b48-ed7e425b62e4",
-			"Type": 5,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Name": "cc227a2e-3675-4eab-a03d-04093d937ce7",
+			"Type": 6,
+			"Hash": "8f6380c0e6669e668048369681b7c374fdd97a790f04b3e23c3133dcdb8f00eb"
+		},
+		{
+			"Name": "627f5d4c-b536-40dc-b074-44d35dcba836",
+			"Type": 6,
+			"Hash": "aab1bbaafea04b5a39d45491f91333ec4fb85bd5d6ffc5921ae8e41368d360c6"
+		},
+		{
+			"Name": "fd59999a-7f7a-458a-8fb0-65078e3f47f9",
+			"Type": 6,
+			"Hash": "c5a7de233d8d29076778b03ace5e2649dc097ed758254f316dd0bfa1f7989bc8"
 		},
 		{
 			"Name": "ff9442f1-b949-4e42-8779-9d3990099333",
 			"Type": 5,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "14546809c5ba6294a5e902d23122f33ea2dda70f0d14d7f4108d90563894ff9b"
 		},
 		{
 			"Name": "483e162c-e535-453f-8f53-e7da8e056d83",
 			"Type": 5,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "fd8c1e10bc21508ebe44304d194b7a9b44e7e511f84037fb487d05c472264e05"
 		},
 		{
-			"Name": "5c714026-34f4-4436-8495-4edc927598b6",
-			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Name": "6ca9a26e-9114-4b1d-8b48-ed7e425b62e4",
+			"Type": 5,
+			"Hash": "edf023015bd688f7a6256e2cec1632923c22ae927efd631401f96919ddab9c08"
 		},
 		{
 			"Name": "a5809a06-e6d5-40ab-848e-19714c1ab151",
 			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "4456c1a9-710a-46aa-b92d-3db0c1b8bc0e",
-			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "5b004b57-20cb-4ee4-a9e1-991dd2946404",
-			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "2357035c-046f-4fa7-b4b0-89b24f1a8692",
-			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "165c45bf1fb07a3323999e54b519f7cfbbd9f9755d9511aa10cb92cad4d8d888"
 		},
 		{
 			"Name": "2342392f-4ddd-40e6-b988-2cfeedcc4f59",
 			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "25695fd167ae86b6bfba2db1a57a43ee48a0c1e5fb4e20a5df18c9e700f9e633"
 		},
 		{
 			"Name": "cb13a718-ef58-4fba-90f4-5fdca4bca652",
 			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "8d0d19cb-0d15-48fe-bacd-a0fe0da58f66",
-			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "0d5766b2-7d69-4aa2-93d0-ccb6c1be5ce6",
-			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "19f2d9ab-09dd-451d-83fb-c24e607c0c95",
-			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "885ef6cc-38a7-4b7b-8b61-8c45c2ce9e64",
-			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "98aa8146-6cbb-4803-927f-1b1e436b02c8",
-			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "a3188418-251d-4653-bcee-89c111678335",
-			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "6b900b76-35a4-426b-a2da-7f77937d5485",
-			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "9a1e90aa-c75a-45c5-b174-117bfc7d3d95",
-			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "f69e517f-bc46-4df7-a28f-1b7b2ab97db9",
-			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "f621fb17fcefda1edf07d9006755df79f68b8e9da5cab8ffd4b19eca413fec68"
 		},
 		{
 			"Name": "0d653119-a9f4-4e3a-a3ab-0f3a81a718dd",
 			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "c49411c78c02c1d248fab7c5bdec5c9a43b403123d9a296915de204b08c0ab3c"
 		},
 		{
-			"Name": "4dab6ff1-e664-41de-8b33-79dee4a10210",
+			"Name": "5b004b57-20cb-4ee4-a9e1-991dd2946404",
 			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "5c8fe1bb0adc9712e1cb4741c96f12c6ebd149f424418c43737d85ecabde3f6b"
+		},
+		{
+			"Name": "4456c1a9-710a-46aa-b92d-3db0c1b8bc0e",
+			"Type": 9,
+			"Hash": "4c9f4d6b4b75f0ab0e8fe47568971c02d34fad18d21f8915b98dedfcf13a2f23"
+		},
+		{
+			"Name": "98aa8146-6cbb-4803-927f-1b1e436b02c8",
+			"Type": 9,
+			"Hash": "e2a3d20278fe57c9187a4cafbb16992b3d26c80c932b4822cfe8daae9c9882aa"
+		},
+		{
+			"Name": "8d0d19cb-0d15-48fe-bacd-a0fe0da58f66",
+			"Type": 9,
+			"Hash": "89a93ef2f564327586970145c5f895130ace0939b1541a73b1e40213fb29732a"
+		},
+		{
+			"Name": "5c714026-34f4-4436-8495-4edc927598b6",
+			"Type": 9,
+			"Hash": "c61c9a640a00781cd5d16a16c50689f862faf6888d9bf01b4dffb23d971aaf05"
+		},
+		{
+			"Name": "885ef6cc-38a7-4b7b-8b61-8c45c2ce9e64",
+			"Type": 9,
+			"Hash": "87dec25590d9c1870faa23c9879983c6b564f4a705fc61e6403cda420733caf5"
+		},
+		{
+			"Name": "2357035c-046f-4fa7-b4b0-89b24f1a8692",
+			"Type": 9,
+			"Hash": "6ede1ab7e90176759b8d46a692ec725157962356ead5231dff0a0446c1b25a7a"
+		},
+		{
+			"Name": "f69e517f-bc46-4df7-a28f-1b7b2ab97db9",
+			"Type": 9,
+			"Hash": "52d7ad56c9f543646b7315d22a52f9f4a66cc47a6803094c6174bf0e7b71b482"
+		},
+		{
+			"Name": "19f2d9ab-09dd-451d-83fb-c24e607c0c95",
+			"Type": 9,
+			"Hash": "4fb01230ecd18204d11cabe2050212357e2ab809cbe4ad0458310570a8d4af47"
+		},
+		{
+			"Name": "9a1e90aa-c75a-45c5-b174-117bfc7d3d95",
+			"Type": 9,
+			"Hash": "dc9648ba783bee3cac8ce311cce7f591fe6da4d20215746f7a22d32bc15f45e4"
+		},
+		{
+			"Name": "a3188418-251d-4653-bcee-89c111678335",
+			"Type": 9,
+			"Hash": "9f2401e342c6004ab304bf90a817c15aa42582ee3976c46e6d1fa56fb2646cbb"
 		},
 		{
 			"Name": "28cf83eb-596e-443b-9b35-d2026428a5b1",
 			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "610e82ead3aecb5ad314690446c8d90c82057d9a0f2ae35bbb52702728139c05"
 		},
 		{
-			"Name": "5637d8b1-015b-44c8-b06f-5e44057437dd",
-			"Type": 7,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Name": "4dab6ff1-e664-41de-8b33-79dee4a10210",
+			"Type": 9,
+			"Hash": "a4b7bdedbbc348f09b03e0f29ae41599968dc056977eed0067af02952045cae3"
+		},
+		{
+			"Name": "6b900b76-35a4-426b-a2da-7f77937d5485",
+			"Type": 9,
+			"Hash": "e862235c2decb2115b1b3f8d637913ece498ec06a8b1153fdaf73c3538dda64c"
+		},
+		{
+			"Name": "0d5766b2-7d69-4aa2-93d0-ccb6c1be5ce6",
+			"Type": 9,
+			"Hash": "9def8ced59505f63e6925918f66d5a52a0fdb83df1d49b159a7b01a6465ccd8d"
 		},
 		{
 			"Name": "ea112e34-14c6-4277-8840-1833edd95272",
 			"Type": 7,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "db399d9099675744bf2cbdf49693e8d584761eca173ce51e70b6d5a033f46f8f"
 		},
 		{
 			"Name": "403ab14e-f9b1-44af-ae2f-595d7379f967",
 			"Type": 7,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "ad7c409d779020312588da108f3d13a4811bffebcb84a66cf19919a52dc3eeb3"
 		},
 		{
-			"Name": "c8aca72b-8e6e-4597-8000-063e7e618a35",
+			"Name": "5637d8b1-015b-44c8-b06f-5e44057437dd",
+			"Type": 7,
+			"Hash": "859c0d86299fce8f2517aaf0eb0ff3f4f75103c151b1133cb1f104a4dd027a89"
+		},
+		{
+			"Name": "0d143712-4fde-428f-9a4a-e349374ecc02",
 			"Type": 11,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "7bf37b797298d8de180a050a2c078647b8569c862197a0fd02af4ba04842ca9d"
 		},
 		{
-			"Name": "duo-activity",
-			"Type": 4,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Name": "b3b93bd6-7fa2-4325-ac34-232ea3ba28b7",
+			"Type": 11,
+			"Hash": "fe81884e706e6822126733cb0bd4ecb30222a79c8faf6de0fa096e2090f7b18e"
 		},
 		{
-			"Name": "duo-telephony",
-			"Type": 4,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "duo-auth",
-			"Type": 4,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Name": "4a70e490-6c71-4abd-bed4-46b588a608dc",
+			"Type": 11,
+			"Hash": "c9b5ca67405b30a278bdc00445d0c0b7022f422ad12cb5ecdf96bd477d397a4a"
 		},
 		{
 			"Name": "duo-offline-enrollment",
 			"Type": 4,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "a8116a0c45053383dca6ab4c7b39674161b27a1b5db7c41489c25f7b94791606"
+		},
+		{
+			"Name": "duo-activity",
+			"Type": 4,
+			"Hash": "b4294c93429e86246897ec91bcf4dfb471e91c5667695fd92ff0fe9d63d56b21"
+		},
+		{
+			"Name": "duo-telephony",
+			"Type": 4,
+			"Hash": "73409c26aa25d85622674de40c41c9bc3b7dc24acfc4fc6881ceafa712c59b28"
+		},
+		{
+			"Name": "duo-auth",
+			"Type": 4,
+			"Hash": "af5a030d524e174dc5892c35c929367b5d44e0817176649bbc25d982903daf4e"
 		},
 		{
 			"Name": "duo-admin",
 			"Type": 4,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "a39a5a14-d198-4d6d-8a7d-5295fa652cac",
-			"Type": 12,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "0228be59cb8ebd9baa1c0145cce4be30f38cd0a813d683c7d4c47014e13cb1e3"
 		},
 		{
 			"Name": "fcf4525a-4780-442c-beea-cd5956b362bf",
 			"Type": 12,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "ae89a9f5a86ef03483ccbda01b309c723ad4802c90c03bd9a62190328f8a7bb8"
 		},
 		{
 			"Name": "860d7ede-b010-4b99-ab6d-a47f4e39994d",
 			"Type": 12,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
+			"Hash": "e34addc1f60b84089839282c8bb81e1eb557ef6b31e81db485ff70df0e995c1d"
+		},
+		{
+			"Name": "a39a5a14-d198-4d6d-8a7d-5295fa652cac",
+			"Type": 12,
+			"Hash": "6cc09d9281a01bf60dc90195c99d1efa264f1454bb619ef3fad2c3daf4da5b97"
 		}
 	],
 	"Dependencies": null,

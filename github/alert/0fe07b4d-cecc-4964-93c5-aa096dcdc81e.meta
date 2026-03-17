@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "0fe07b4d-cecc-4964-93c5-aa096dcdc81e",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T15:28:00.432032053Z",
+	"LastUpdated": "2026-03-03T15:28:10.260685339-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Repo - Medium - Push Protection for Secret Scanning Modified",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "ccaef2f3-c496-4bc4-b724-29c579c1093c",
-	"UID": 1,
+	"ThingUUID": "80025b9c-1afc-42c3-9b8d-a5f5921c18a8",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

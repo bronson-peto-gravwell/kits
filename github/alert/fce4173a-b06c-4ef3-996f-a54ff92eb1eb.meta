@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "fce4173a-b06c-4ef3-996f-a54ff92eb1eb",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T15:05:14.776067629Z",
+	"LastUpdated": "2026-03-03T15:28:10.361607574-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Org - Low - Runner Added to Group",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "9b3edd80-1575-4298-ac7f-1866507a7c52",
-	"UID": 1,
+	"ThingUUID": "b3b1a903-2220-49a9-92ef-28c39350b51a",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

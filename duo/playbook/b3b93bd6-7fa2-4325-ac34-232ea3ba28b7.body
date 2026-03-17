@@ -1,0 +1,12 @@
+A toolkit for interacting with Duo data in Gravwell. 
+
+This kit includes 
+- Queries
+- Resources (lookups)
+- Templates
+- Autoextractors
+- Macros
+- Dashboards
+- Alerts
+- Scheduled searches
+- Flows to help streamline Duo analysis across Activity, Authentication, Administrator, Telephony, and Offline Enrollment log sources.

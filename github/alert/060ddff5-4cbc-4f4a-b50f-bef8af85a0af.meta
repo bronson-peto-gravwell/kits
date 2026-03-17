@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "060ddff5-4cbc-4f4a-b50f-bef8af85a0af",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T15:30:15.268324879Z",
+	"LastUpdated": "2026-03-03T15:28:10.458176747-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Token - High - Personal Access Token (PAT) Granted or Created",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "9740200e-f1fb-4bd9-9d0e-83c2f0890cf1",
-	"UID": 1,
+	"ThingUUID": "e857fa47-e87a-4dbb-8cc6-49f86080d093",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

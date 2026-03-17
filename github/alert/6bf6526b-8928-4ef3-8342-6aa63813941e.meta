@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "6bf6526b-8928-4ef3-8342-6aa63813941e",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T15:09:12.590455295Z",
+	"LastUpdated": "2026-03-03T15:28:10.234871041-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Org - Medium - Member Added After 7 Day Invitation Expiry",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "42f25638-b8e3-42c1-b4cd-767078c149fb",
-	"UID": 1,
+	"ThingUUID": "733ba7a7-7c38-442b-b0b7-eb04ee5be523",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

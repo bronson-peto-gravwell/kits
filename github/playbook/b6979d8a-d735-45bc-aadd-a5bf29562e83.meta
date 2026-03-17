@@ -1,7 +1,7 @@
 {
-	"UUID": "a339384d-028a-44a2-ab6e-bbfe34fd6a00",
+	"UUID": "61fc7c64-c11a-436b-be92-1d2b0606a95e",
 	"GUID": "b6979d8a-d735-45bc-aadd-a5bf29562e83",
-	"UID": 1,
+	"UID": 2,
 	"GIDs": [],
 	"Global": true,
 	"WriteAccess": {
@@ -10,13 +10,15 @@
 	},
 	"Name": "Playbook - GitHub - Org - Low - New Member Added to Org",
 	"Desc": "",
-	"Labels": ["github", "github"],
-	"LastUpdated": "2025-10-14T21:25:16.607338000Z",
+	"Labels": [
+		"github"
+	],
+	"LastUpdated": "2026-03-03T15:28:09.820588729-07:00",
 	"Author": {
 		"Name": "Gravwell",
 		"Email": "info@gravwell.io",
 		"Company": "Gravwell",
 		"URL": "gravwell.io"
 	},
-	"Synced": false
+	"Synced": true
 }

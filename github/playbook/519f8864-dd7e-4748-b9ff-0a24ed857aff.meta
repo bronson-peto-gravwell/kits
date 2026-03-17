@@ -1,7 +1,7 @@
 {
-	"UUID": "bbfeefd0-60ff-453c-a04a-12cd91b96fb3",
+	"UUID": "872c3186-8ecc-41d5-a4dc-e59f30d08e1c",
 	"GUID": "519f8864-dd7e-4748-b9ff-0a24ed857aff",
-	"UID": 1,
+	"UID": 2,
 	"GIDs": [],
 	"Global": true,
 	"WriteAccess": {
@@ -10,13 +10,15 @@
 	},
 	"Name": "Playbook - GitHub - Hook - Low - Webhook Modified",
 	"Desc": "",
-	"Labels": ["github", "github"],
-	"LastUpdated": "2025-10-14T21:25:16.603905000Z",
+	"Labels": [
+		"github"
+	],
+	"LastUpdated": "2026-03-03T15:28:09.849755624-07:00",
 	"Author": {
 		"Name": "Gravwell",
 		"Email": "info@gravwell.io",
 		"Company": "Gravwell",
 		"URL": "gravwell.io"
 	},
-	"Synced": false
+	"Synced": true
 }

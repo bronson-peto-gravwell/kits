@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "7fdbc1bf-14c2-4f03-b4a7-7b76a587517a",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T14:43:26.951055677Z",
+	"LastUpdated": "2026-03-03T15:28:10.081785522-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Business - High - Secret Scanning Disabled for New Repos in Enterprise",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "f2833346-505b-40ba-be93-e1d18a7dec29",
-	"UID": 1,
+	"ThingUUID": "1e3316f5-c6e2-4920-a8a4-858f08d2181e",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

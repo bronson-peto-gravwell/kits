@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "61fb30f3-9c52-49b5-b0e8-636da15bfb6e",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T15:18:02.806842638Z",
+	"LastUpdated": "2026-03-03T15:28:10.198313912-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Repo - High - Secret Scanning Disabled for a Repo",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "cc3b06ff-eaee-42ef-97b1-983e7115efb5",
-	"UID": 1,
+	"ThingUUID": "613a8aa6-3a14-496f-97d9-2eb03c4799de",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

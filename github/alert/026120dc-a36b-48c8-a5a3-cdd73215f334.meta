@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "026120dc-a36b-48c8-a5a3-cdd73215f334",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T13:18:46.636889297Z",
+	"LastUpdated": "2026-03-03T15:28:10.156960578-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Business - High - GitHub Advanced Security for Enterprise Disabled",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "7901daab-a9b5-4249-856f-c919ba9bebb0",
-	"UID": 1,
+	"ThingUUID": "46ed1a91-d9b9-4c63-b63c-66d9d72816ac",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

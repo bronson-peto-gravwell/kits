@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "e6ad350d-d77d-4e7c-89f0-f2291e3d9193",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T12:30:49.475303924Z",
+	"LastUpdated": "2026-03-03T15:28:10.469677126-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Business - High - Dependabot Alerts Disabled",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "90c33828-b638-448e-b171-5679b0d4c2d9",
-	"UID": 1,
+	"ThingUUID": "f2c620a6-d5d7-4f36-8976-9846a8c6bc8d",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

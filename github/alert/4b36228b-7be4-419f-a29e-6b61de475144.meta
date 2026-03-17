@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "4b36228b-7be4-419f-a29e-6b61de475144",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T15:17:19.550104048Z",
+	"LastUpdated": "2026-03-03T15:28:10.068250833-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Repo - High - Repo changed from Private to Public",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "584e00d8-85ed-40d7-b62c-776c3041fb6e",
-	"UID": 1,
+	"ThingUUID": "1adbf169-3754-4d0e-8e9a-0d05a75bbc4a",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "7457d7b2-bd56-4dce-b925-b5c4889da78c",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T14:46:45.426418963Z",
+	"LastUpdated": "2026-03-03T15:28:10.032247233-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Codespaces - Medium - Delete Action Invoked",
 	"SaveSearchDuration": 604800,
@@ -46,8 +46,8 @@
 		"ActiveSchema": "simple"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "b70370cc-943a-44be-94e2-003135aed4e8",
-	"UID": 1,
+	"ThingUUID": "055ae239-42fb-4209-86ee-ed907e9d5e0b",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,

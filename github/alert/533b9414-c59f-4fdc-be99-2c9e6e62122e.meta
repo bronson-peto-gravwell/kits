@@ -21,11 +21,11 @@
 	"GIDs": [],
 	"GUID": "533b9414-c59f-4fdc-be99-2c9e6e62122e",
 	"Global": true,
-	"IngestBlocked": false,
+	"IngestBlocked": true,
 	"Labels": [
 		"github"
 	],
-	"LastUpdated": "2025-09-23T15:02:09.940454127Z",
+	"LastUpdated": "2026-03-03T15:28:10.095753376-07:00",
 	"MaxEvents": 16,
 	"Name": "Alert - GitHub - Org - High - Owner Role Downgraded",
 	"SaveSearchDuration": 604800,
@@ -41,8 +41,8 @@
 		"ActiveSchema": "off"
 	},
 	"TargetTag": "_alerts",
-	"ThingUUID": "20edf96e-21ee-4d75-9e5e-82e778baa7cb",
-	"UID": 1,
+	"ThingUUID": "2090540e-cc6f-4136-8053-3f4eeef4256b",
+	"UID": 2,
 	"UserMetadata": {},
 	"WriteAccess": {
 		"Global": false,
