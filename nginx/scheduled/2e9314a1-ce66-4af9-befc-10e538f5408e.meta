@@ -1,0 +1,19 @@
+{
+	"Name": "Nginx - HTTP Status Code Distribution",
+	"Description": "Status frequency by HTTP status category",
+	"Labels": [
+		"nginx",
+		"stats",
+		"http-status",
+		"baseline"
+	],
+	"Schedule": "45 * * * *",
+	"Duration": -3600,
+	"DefaultDeploymentRules": {
+		"Disabled": true,
+		"RunImmediately": false
+	},
+	"ScheduledType": "search",
+	"GUID": "2e9314a1-ce66-4af9-befc-10e538f5408e",
+	"SearchReference": "27e4f919-5f7d-45d8-9977-e3acdd33bb85"
+}

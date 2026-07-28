@@ -1,0 +1,22 @@
+{
+	"Name": "Nginx - Top Probed URIs",
+	"Description": "Most frequently requested URIs that returned 404 — reveals what attackers are probing for",
+	"Labels": [
+		"nginx",
+		"stats",
+		"uri",
+		"http-status",
+		"enumeration",
+		"reconnaissance",
+		"ip-activity"
+	],
+	"Schedule": "13 * * * *",
+	"Duration": -3600,
+	"DefaultDeploymentRules": {
+		"Disabled": true,
+		"RunImmediately": false
+	},
+	"ScheduledType": "search",
+	"GUID": "aefe4c64-b2ab-4f4c-a830-1cb943380be9",
+	"SearchReference": "b3bf174b-0bcd-48a6-ac54-49196f810275"
+}

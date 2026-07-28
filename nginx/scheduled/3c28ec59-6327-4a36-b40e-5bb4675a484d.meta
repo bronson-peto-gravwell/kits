@@ -1,0 +1,21 @@
+{
+	"Name": "Nginx - Error Rate By IP",
+	"Description": "4xx responses per source IP — high error rates indicate directory enumeration or scanning",
+	"Labels": [
+		"nginx",
+		"stats",
+		"http-status",
+		"scanning",
+		"reconnaissance",
+		"ip-activity"
+	],
+	"Schedule": "34 * * * *",
+	"Duration": -3600,
+	"DefaultDeploymentRules": {
+		"Disabled": true,
+		"RunImmediately": false
+	},
+	"ScheduledType": "search",
+	"GUID": "3c28ec59-6327-4a36-b40e-5bb4675a484d",
+	"SearchReference": "982e7792-8181-4831-a2f9-9d0529eb67ed"
+}

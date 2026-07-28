@@ -1,0 +1,17 @@
+{
+	"Name": "Nginx - Errors Over Time",
+	"Description": "4xx responses over time",
+	"Labels": [
+		"nginx",
+		"stats"
+	],
+	"Schedule": "30 * * * *",
+	"Duration": -3600,
+	"DefaultDeploymentRules": {
+		"Disabled": true,
+		"RunImmediately": false
+	},
+	"ScheduledType": "search",
+	"GUID": "73c76b51-9196-44e1-a5c7-9bbef74fdc0a",
+	"SearchReference": "a9b5033c-75e0-42d9-9e3e-b3d4c28e92ef"
+}

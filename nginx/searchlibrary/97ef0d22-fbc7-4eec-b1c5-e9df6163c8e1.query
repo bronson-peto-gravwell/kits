@@ -1,0 +1,3 @@
+tag=$NGINX_ERR
+| grep "signal 11"
+| table
