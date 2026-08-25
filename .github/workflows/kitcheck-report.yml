@@ -40,7 +40,15 @@ jobs:
         id: dirs
         run: |
           set -euo pipefail
-          changed=$(git diff --name-only "${{ github.event.pull_request.base.sha }}" "${{ github.event.pull_request.head.sha }}" \
+          # Three-dot (merge-base-relative), not two-dot: a two-dot diff
+          # compares base and head as two arbitrary commits, so a PR
+          # branch that's behind base (common on a long-lived branch)
+          # picks up every directory base changed since the branch
+          # diverged, not just what the PR itself touched -- confirmed
+          # real via a real stale branch (22 commits behind), which
+          # pulled in 4 unrelated kit directories into the report
+          # alongside the one the PR actually changed.
+          changed=$(git diff --name-only "${{ github.event.pull_request.base.sha }}...${{ github.event.pull_request.head.sha }}" \
             | cut -d/ -f1 | sort -u)
           # A dir "looks like a kit" if it has a MANIFEST — covers both
           # existing kits and brand-new ones added in this PR, without
