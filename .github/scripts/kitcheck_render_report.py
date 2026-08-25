@@ -23,7 +23,7 @@ with open(result_path, encoding="utf-8") as f:
 
 kit = result["kit"]
 s = result["summary"]
-mark = "✅ PASSES" if s["meets_initial_threshold"] else "❌ NEEDS ATTENTION"
+mark = "✅ PASSES" if s["passes"] else "❌ NEEDS ATTENTION"
 
 print(f"## kitcheck: {kit.get('name') or kit_name} — {mark}")
 print()
