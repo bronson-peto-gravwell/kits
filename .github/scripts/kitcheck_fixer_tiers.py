@@ -30,6 +30,7 @@ FIXER_TIERS = {
     ("check_detection_labels", None): ("partial", "bin/attcklabels"),
     ("check_resource_labels", None): ("partial", "bin/labelsuggest"),
     ("check_naming_consistency", "Standards §6"): ("partial", "bin/namingfix --fix-naming-prefix"),
+    ("check_images", None): ("partial", "bin/artlink"),
 }
 
 

@@ -122,13 +122,6 @@ jobs:
             if [ -f "kitcheck-$d.json" ]; then
               echo "### \`$d\`" >> "$GITHUB_STEP_SUMMARY"
               python3 .github/scripts/kitcheck_findings_detail.py "$d" "kitcheck-$d.json" >> "$GITHUB_STEP_SUMMARY"
-              # GitHub's file viewer shows a symlinked cover/banner/icon's
-              # target path as text, it doesn't follow the link to render
-              # an image -- resolve and embed the actual bytes so a
-              # reviewer doesn't have to leave the PR to check they look
-              # right. Never fails the job: a kit with no images at all,
-              # or an unreadable one, just prints nothing extra.
-              python3 .github/scripts/kitcheck_render_images.py "$d" >> "$GITHUB_STEP_SUMMARY" || true
             fi
           done
 
