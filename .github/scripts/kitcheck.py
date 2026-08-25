@@ -98,6 +98,13 @@ def load_manifest(root: Path):
         return None, f"MANIFEST at {manifest_path} is not valid JSON: {e}"
 
 
+def load_manifest_file(path: Path):
+    try:
+        return json.loads(path.read_text(encoding="utf-8")), None
+    except (OSError, json.JSONDecodeError) as e:
+        return None, f"--base-manifest at {path} could not be read as JSON: {e}"
+
+
 def kitname_from_id(kit_id):
     if not isinstance(kit_id, str):
         return None
@@ -135,6 +142,39 @@ def check_max_version(manifest, findings):
         finding(findings, "warning", f"{STANDARDS} {SEC['5.1']}", "MANIFEST.MaxVersion",
                 f"expected {EXPECTED_MAX_VERSION} (5.99.99), found {mv!r} — "
                 "not universally followed in existing kits, worth a look for new/changed ones")
+
+
+def check_version_increment(manifest, findings, base_manifest=None, is_new_kit=False):
+    # §5.1 "start with 1; iterate" binds two distinct moments: a brand-new
+    # kit starts at 1, and an update to an existing kit must move the
+    # version. Confirmed via real gravwell/kits mainline history (paloalto,
+    # sysmon, juniper): every merge that changes a kit bumps Version by
+    # exactly 1; a merge that leaves a kit's content untouched leaves
+    # Version untouched too. A same-or-lower Version on a PR that touches
+    # an existing kit is therefore a real regression, not a style nit —
+    # confirmed via a genuine historical incident (gravwell/kits PR #288,
+    # "new_covers") that dropped auditd from Version 2 back to 1 on main.
+    # A jump of more than 1 does happen legitimately (okta went 1->3 once)
+    # so it's a warning, not an error.
+    version = manifest.get("Version")
+    if not isinstance(version, int) or isinstance(version, bool):
+        return  # malformed Version already flagged by check_manifest_core
+
+    if base_manifest is not None:
+        base_version = base_manifest.get("Version")
+        if not isinstance(base_version, int) or isinstance(base_version, bool):
+            return  # can't compare against a malformed/missing base Version
+        if version <= base_version:
+            finding(findings, "error", f"{STANDARDS} {SEC['5.1']}", "MANIFEST.Version",
+                    f"published version is {base_version}, this PR's version is {version} — "
+                    "every kit-content change must iterate the version")
+        elif version > base_version + 1:
+            finding(findings, "warning", f"{STANDARDS} {SEC['5.1']}", "MANIFEST.Version",
+                    f"version jumped from {base_version} to {version} (more than +1) — "
+                    "confirm this skip is intentional")
+    elif is_new_kit and version != 1:
+        finding(findings, "warning", f"{STANDARDS} {SEC['5.1']}", "MANIFEST.Version",
+                f"new kits should start at Version 1, found {version}")
 
 
 def check_hashes_zeroed(manifest, findings):
@@ -265,6 +305,232 @@ def check_playbooks(root, findings):
     if not any("readme" in n for n in lowered):
         finding(findings, "warning", f"{STANDARDS} {SEC['12']}", "playbook/",
                 "no playbook name suggests 'Copy of Readme' (heuristic match, not exact-name verified)")
+
+
+# Mirrors "a real Gravwell query starts with tag= (optionally wrapped in a
+# single leading paren), a $MACRO that expands to one, or a bare
+# resource-dump module that needs no tag at all" -- confirmed against
+# every real fenced block AND inline span in a 35-kit fleet, not just the
+# 6-kit sample. The leading-paren form is real (aws_cloudtrail:
+# "(tag=aws-cloudtrail)"). The bare "dump" form is real and was a
+# confirmed false-positive class before being added: "dump -r
+# fortinet_evs | table"-shaped one-liners (a resource lookup, not a
+# tag-scoped search) appear across fortinet/duo/cisco_asa/cisco_ftd and
+# don't and shouldn't start with tag=/$MACRO. Not generalized to other
+# bare module names beyond this one confirmed, repeated real pattern --
+# same "scope from real fleet evidence, don't build ahead of it"
+# discipline as the rest of this file.
+_QUERY_LIKE_RE = re.compile(r"^\s*\(?\s*(tag\s*=|\$[A-Z_][A-Z0-9_]*|dump\b)")
+
+
+def _playbook_fenced_blocks(text):
+    # Line-based on purpose, not a single regex matching an opening
+    # fence's info string against [a-zA-Z]*\n -- that approach desyncs
+    # the instant a fence's info string has anything outside [A-Za-z]
+    # (confirmed via a real aws_cloudtrail playbook using MyST-style
+    # ```{note} admonition blocks: the regex failed to recognize that
+    # fence as an opener, then paired every SUBSEQUENT fence as
+    # open/close one slot off -- every reported "code block" was
+    # actually the prose BETWEEN fences, and the real fenced content,
+    # the thing this check exists to look at, was never inspected at
+    # all). A fence line's own info-string content doesn't matter for
+    # telling code from prose; only whether the line starts with ```.
+    lines = text.splitlines()
+    in_block = False
+    current = []
+    for line in lines:
+        if line.strip().startswith("```"):
+            if in_block:
+                yield "\n".join(current)
+                current = []
+            in_block = not in_block
+            continue
+        if in_block:
+            current.append(line)
+    if in_block and current:
+        yield "\n".join(current)
+
+
+def _strip_fenced_blocks(text):
+    # Same fence-tracking as _playbook_fenced_blocks, but returns the
+    # text with fenced regions (and their ``` marker lines) removed, so
+    # an inline-span scan never re-inspects a fenced block's own content
+    # as if it were a separate inline span.
+    lines = text.splitlines()
+    in_block = False
+    kept = []
+    for line in lines:
+        if line.strip().startswith("```"):
+            in_block = not in_block
+            continue
+        if not in_block:
+            kept.append(line)
+    return "\n".join(kept)
+
+
+def _first_significant_line(block):
+    # Skip blank lines and `//` comment lines before judging whether a
+    # block looks query-like -- confirmed real convention across
+    # github/okta/thinkst-canary, where a genuine tag=/$MACRO query is
+    # routinely preceded by a `// <description>` comment line; checking
+    # only the literal first line would false-positive on all three.
+    for line in block.splitlines():
+        stripped = line.strip()
+        if not stripped or stripped.startswith("//"):
+            continue
+        return stripped
+    return ""
+
+
+def check_playbook_code_spans(root, findings):
+    # Gravwell's playbook Markdown has one load-bearing exception to
+    # ordinary Markdown (markdownguide.org basic syntax otherwise): a
+    # backtick-delimited span -- fenced (```) block *or* inline
+    # (`single-backtick`) span -- is not rendered as code, Gravwell
+    # attempts to parse its contents as a query. The in-app editor's own
+    # docs only mention fenced blocks; the real, current behavior is
+    # broader and confirmed directly against a real rendered playbook,
+    # not inferred: an ordinary inline span like `` `mgd` `` (a field
+    # value, from Juniper's own changelog) rendered as a broken "Launch"
+    # button with "Query parsing error: Invalid search module: mgd" in
+    # the actual Gravwell UI. Playbooks were originally meant to package
+    # a set of actually-runnable queries; real kit content (fenced and
+    # inline alike) has drifted from that, using backticks for raw log
+    # lines, config snippets, resource/macro names, and ordinary prose
+    # code-styling the same way any other Markdown context would.
+    #
+    # Heuristic, not a real Gravwell query parser -- always a warning,
+    # never an error. The Markdown spec also treats 4-space/1-tab
+    # indentation as a code block, deliberately not checked here: too
+    # easy to false-positive against an ordinarily indented nested list.
+    # Known, confirmed-real gap: a fence glued directly to its content
+    # with no newline (e.g. "count Flags```") isn't reliably parsed here
+    # either -- real malformed fence usage seen in the wild (sysmon's
+    # Kit Overview playbook, which also independently has 13 of its 16
+    # fenced blocks as prose/headers/an image rather than queries --
+    # that playbook's rendering is very likely broken today) -- a human
+    # still needs to catch the glued-fence case by eye.
+    playbook_dir = root / "playbook"
+    if not playbook_dir.exists():
+        return
+    for meta_path in sorted(playbook_dir.glob("*.meta")):
+        body_path = meta_path.with_suffix(".body")
+        if not body_path.exists():
+            continue
+        d = _load_json_safe(meta_path)
+        name = d.get("Name", meta_path.stem) if isinstance(d, dict) else meta_path.stem
+        try:
+            text = body_path.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            continue
+
+        for block in _playbook_fenced_blocks(text):
+            first_line = _first_significant_line(block)
+            if first_line and not _QUERY_LIKE_RE.match(first_line):
+                finding(findings, "warning", "playbook Markdown",
+                        f"playbook/{body_path.name} ({name})",
+                        f"fenced code block doesn't look like a Gravwell query (starts "
+                        f"{first_line[:60]!r}) -- Gravwell will still try to parse it as "
+                        "one; if this is illustrative/non-query content, use <pre> instead "
+                        "of a fenced block")
+
+        # Inline spans are checked against the text with fenced blocks
+        # removed first, so a fenced block's own content is never
+        # double-counted or misread as a separate inline span.
+        text_without_fences = _strip_fenced_blocks(text)
+        for span in re.findall(r"`([^`\n]+)`", text_without_fences):
+            stripped_span = span.strip()
+            if stripped_span and not _QUERY_LIKE_RE.match(stripped_span):
+                finding(findings, "warning", "playbook Markdown",
+                        f"playbook/{body_path.name} ({name})",
+                        f"inline code span doesn't look like a Gravwell query "
+                        f"({stripped_span[:60]!r}) -- Gravwell will still try to parse it "
+                        "as one; if this is an ordinary code-styled mention (a field, "
+                        "macro, or resource name), use plain text or bold instead of "
+                        "backticks")
+
+
+_MULTI_UNDERSCORE_WORD_RE = re.compile(r"[\w]+(?:_[\w]+){2,}")
+
+
+def check_playbook_underscore_emphasis(root, findings):
+    # A second, distinct Gravwell playbook Markdown quirk from the
+    # backtick-span one above: Gravwell doesn't apply CommonMark's usual
+    # "an underscore inside a word isn't an emphasis delimiter"
+    # exception. A self-contained identifier with 2+ underscores (e.g.
+    # $JUNIPER_LOGIN_HELPER) gets its middle segment silently
+    # italicized -- confirmed live in the Gravwell UI on a real Juniper
+    # playbook, independent of whether the identifier also sits inside
+    # **bold** wrapping (the wrapping wasn't the cause; the identifier's
+    # own internal underscore pair is). Fenced blocks and inline
+    # backtick spans are stripped first: neither is run through
+    # Gravwell's Markdown emphasis engine at all (a fenced block is fed
+    # to the query parser; an inline span renders as a Launch button,
+    # per check_playbook_code_spans above), so an underscore inside
+    # either isn't a candidate for this specific bug.
+    #
+    # Deliberately scoped narrower than "any bare underscore" -- that
+    # fired 1511 times across 33 of 35 real kits' playbooks, unusably
+    # noisy. Scoped instead to words with 2+ underscores forming a
+    # self-contained pair fully inside one token -- the exact mechanism
+    # confirmed live -- which drops to 284 real candidates fleet-wide,
+    # 90% concentrated in 4 identifier-heavy kits (grok, duo, corelight,
+    # cisco_ftd), not spread evenly as noise; most kits saw 0-6. A clean
+    # __word__-style bold wrapper (double underscore at both edges,
+    # standard correct Markdown) is excluded explicitly -- it isn't a
+    # bug, and was the only real false-positive class found while
+    # verifying this (3 of 287 candidates).
+    #
+    # Known, disclosed scope gap: words with exactly one underscore
+    # (396 candidates fleet-wide) are NOT flagged -- whether a lone
+    # underscore can still pair with an unrelated one elsewhere in the
+    # same paragraph is unconfirmed, and flagging every one would
+    # reintroduce the noise problem above. Real kit content escaped
+    # these defensively without individually confirming each one
+    # breaks; this check only asserts the confirmed mechanism.
+    playbook_dir = root / "playbook"
+    if not playbook_dir.exists():
+        return
+    for meta_path in sorted(playbook_dir.glob("*.meta")):
+        body_path = meta_path.with_suffix(".body")
+        if not body_path.exists():
+            continue
+        d = _load_json_safe(meta_path)
+        name = d.get("Name", meta_path.stem) if isinstance(d, dict) else meta_path.stem
+        try:
+            text = body_path.read_text(encoding="utf-8", errors="ignore")
+        except Exception:
+            continue
+
+        prose = re.sub(r"`[^`\n]+`", "", _strip_fenced_blocks(text))
+        seen = set()
+        for match in _MULTI_UNDERSCORE_WORD_RE.finditer(prose):
+            raw = match.group()
+            if raw.startswith("__") and raw.endswith("__"):
+                continue  # standard __bold__ wrapper, not a bug -- checked
+                          # on the untrimmed match, before the rstrip below
+                          # can strip its own closing "__" off
+            # Trim a trailing bare underscore before a non-word character
+            # (e.g. the literal "<alert_name_or_*>" placeholder syntax in
+            # a real duo playbook) -- \w includes "_", so the regex's own
+            # [\w]+ can glue an unrelated trailing underscore onto the
+            # match; trimming keeps the reported identifier from looking
+            # like a typo instead of the real one.
+            word = raw.rstrip("_")
+            if word.count("_") < 2:
+                continue  # trimming dropped it below the 2-underscore threshold
+            if word in seen:
+                continue  # already reported once for this playbook
+            offsets = [match.start() + i for i, c in enumerate(word) if c == "_"]
+            if all(prose[o - 1] == "\\" for o in offsets):
+                continue  # every underscore already escaped
+            seen.add(word)
+            finding(findings, "warning", "playbook Markdown",
+                    f"playbook/{body_path.name} ({name})",
+                    f"{word!r} has an unescaped multi-underscore run -- Gravwell doesn't "
+                    "treat an intraword underscore as literal the way ordinary Markdown "
+                    "does, so part of it can render silently italicized; escape each "
+                    "underscore as \\_ if this is meant to display as plain text")
 
 
 def check_dashboards(root, findings):
@@ -531,7 +797,7 @@ def _verify_all_checks_registered():
         )
 
 
-def run_all_checks(root: Path):
+def run_all_checks(root: Path, base_manifest=None, is_new_kit=False):
     manifest, err = load_manifest(root)
     if err:
         return None, err
@@ -539,6 +805,7 @@ def run_all_checks(root: Path):
     findings = []
     check_manifest_core(manifest, findings)
     check_max_version(manifest, findings)
+    check_version_increment(manifest, findings, base_manifest, is_new_kit)
     check_hashes_zeroed(manifest, findings)
     check_config_macro_tags(manifest, findings)
 
@@ -549,6 +816,8 @@ def run_all_checks(root: Path):
     check_macros_no_leading_pipe(root, findings)
     check_macro_documentation(root, findings)
     check_playbooks(root, findings)
+    check_playbook_code_spans(root, findings)
+    check_playbook_underscore_emphasis(root, findings)
     check_dashboards(root, findings)
     check_actionables(root, findings)
     check_resource_labels(root, findings)
@@ -594,7 +863,12 @@ def render_text(result) -> str:
         return "\n".join(lines)
     for f in result["findings"]:
         marker = "ERROR" if f["severity"] == "error" else "warn "
-        lines.append(f"  [{marker}] {f['resource']} — {f['message']} ({f['section']})")
+        # `check` included so a copy-pasted summary (no JSON download
+        # needed) is still enough to look up fixer coverage via
+        # `bin/list-fixers` in kit-utilities -- the human-readable text
+        # otherwise carries everything the JSON does except this field.
+        lines.append(f"  [{marker}] {f['resource']} — {f['message']} "
+                      f"({f['section']}) [{f['check']}]")
     return "\n".join(lines)
 
 
@@ -609,6 +883,15 @@ def main():
     parser.add_argument("--format", choices=["json", "text", "both"], default="json",
                          help="stdout format (default: json). JSON is always well-formed and "
                               "complete regardless of this choice.")
+    version_group = parser.add_mutually_exclusive_group()
+    version_group.add_argument("--base-manifest",
+                                help="path to the MANIFEST from the PR base ref, for this same "
+                                     "kit directory — enables the version-iteration check "
+                                     "(Standards §5.1). Omit when running outside PR context.")
+    version_group.add_argument("--new-kit", action="store_true",
+                                help="this kit directory is new in the current PR (no MANIFEST "
+                                     "existed at the base ref) — checks Version starts at 1 "
+                                     "instead of comparing against a base.")
     args = parser.parse_args()
 
     root = Path(args.input).resolve()
@@ -616,7 +899,14 @@ def main():
         print(f"error: {root} is not a directory", file=sys.stderr)
         sys.exit(1)
 
-    result, err = run_all_checks(root)
+    base_manifest = None
+    if args.base_manifest:
+        base_manifest, base_err = load_manifest_file(Path(args.base_manifest))
+        if base_err:
+            print(f"warning: {base_err} — skipping the version-iteration check", file=sys.stderr)
+            base_manifest = None
+
+    result, err = run_all_checks(root, base_manifest=base_manifest, is_new_kit=args.new_kit)
     if err:
         print(f"error: {err}", file=sys.stderr)
         print(f"error: {root} does not look like a kit directory. Point --input directly "

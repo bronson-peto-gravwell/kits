@@ -64,9 +64,22 @@ jobs:
           # the tool just to get a second format.
           mkdir -p /tmp/kitcheck-text
           declare -a verdict_lines
+          base_sha="${{ github.event.pull_request.base.sha }}"
           for d in ${{ steps.dirs.outputs.dirs }}; do
             safe_name=$(echo "$d" | tr '/' '_')
-            python3 .github/scripts/kitcheck.py --input "$d" --format text \
+
+            # Version-iteration check (Standards §5.1) needs to know whether
+            # this kit existed at the PR base — if its MANIFEST is fetchable
+            # from base_sha, this is an update and we compare versions; if
+            # not, it's a genuinely new kit and Version should start at 1.
+            version_args=()
+            if git show "$base_sha:$d/MANIFEST" > "/tmp/kitcheck-text/$safe_name-base-manifest.json" 2>/dev/null; then
+              version_args=(--base-manifest "/tmp/kitcheck-text/$safe_name-base-manifest.json")
+            else
+              version_args=(--new-kit)
+            fi
+
+            python3 .github/scripts/kitcheck.py --input "$d" --format text "${version_args[@]}" \
               --output "kitcheck-$d.json" > "/tmp/kitcheck-text/$safe_name.txt" 2>&1 || true
 
             if [ -f "kitcheck-$d.json" ]; then
