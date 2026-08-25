@@ -66,12 +66,10 @@ jobs:
         run: |
           set -euo pipefail
 
-          # JSON only -- kitcheck_verdict.py and kitcheck_findings_detail.py
-          # both render their own markdown from it (the aggregate row and
-          # the tiered per-kit detail respectively), so there's no separate
-          # --format text pass to keep in sync.
+          # kitcheck targets one kit per PR (see "Determine changed kit
+          # directories" above) -- kitcheck_render_report.py prints the
+          # full report directly, no separate aggregate-across-kits step.
           mkdir -p /tmp/kitcheck-tmp
-          declare -a verdict_lines
           base_sha="${{ github.event.pull_request.base.sha }}"
           for d in ${{ steps.dirs.outputs.dirs }}; do
             safe_name=$(echo "$d" | tr '/' '_')
@@ -91,37 +89,9 @@ jobs:
               --output "kitcheck-$d.json" > /dev/null 2>&1 || true
 
             if [ -f "kitcheck-$d.json" ]; then
-              line=$(python3 .github/scripts/kitcheck_verdict.py "$d" "kitcheck-$d.json")
+              python3 .github/scripts/kitcheck_render_report.py "$d" "kitcheck-$d.json" >> "$GITHUB_STEP_SUMMARY"
             else
-              line="| \`$d\` | ⚠️ couldn't evaluate (not a valid kit directory?) | — | — | — | — | — |"
-            fi
-            verdict_lines+=("$line")
-          done
-
-          {
-            echo "## kitcheck report"
-            echo
-            echo "Structural checks only — see \`docs/kitcheck-standards-checklist.md\`"
-            echo "in kit-management for what's covered and what isn't. **Advisory, not a merge gate** —"
-            echo "\"NEEDS ATTENTION\" means error-severity findings exist, not that the build failed."
-            echo
-            echo "🔧 Mechanical / 🟡 Partial / 🔴 Manual = kit-utilities fixer coverage for each"
-            echo "finding, not an assessment of whether it's a real problem — some manual findings"
-            echo "are known-intentional for a given kit; that's a judgment call for whoever's"
-            echo "looking at it, not something kitcheck asserts."
-            echo
-            echo "| Kit | Verdict | Errors | Warnings | 🔧 Mechanical | 🟡 Partial | 🔴 Manual |"
-            echo "|---|---|---|---|---|---|---|"
-            for line in "${verdict_lines[@]}"; do
-              echo "$line"
-            done
-            echo
-          } >> "$GITHUB_STEP_SUMMARY"
-
-          for d in ${{ steps.dirs.outputs.dirs }}; do
-            if [ -f "kitcheck-$d.json" ]; then
-              echo "### \`$d\`" >> "$GITHUB_STEP_SUMMARY"
-              python3 .github/scripts/kitcheck_findings_detail.py "$d" "kitcheck-$d.json" >> "$GITHUB_STEP_SUMMARY"
+              echo "## kitcheck: \`$d\` — ⚠️ couldn't evaluate (not a valid kit directory?)" >> "$GITHUB_STEP_SUMMARY"
             fi
           done
 

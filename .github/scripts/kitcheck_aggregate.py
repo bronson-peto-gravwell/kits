@@ -2,8 +2,8 @@
 """Print "pass" if every given kitcheck.py JSON result has
 meets_initial_threshold == true, else "needs-attention". Used by
 kitcheck-report.yml to decide which PR label to apply — split out for the
-same reason as kitcheck_verdict.py: avoid embedding multi-line Python
-inside a bash command inside a YAML block scalar.
+same reason as kitcheck_render_report.py: avoid embedding multi-line
+Python inside a bash command inside a YAML block scalar.
 
 Usage: kitcheck_aggregate.py <result.json> [<result.json> ...]
 """

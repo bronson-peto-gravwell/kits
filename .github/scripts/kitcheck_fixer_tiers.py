@@ -47,11 +47,17 @@ def classify(finding):
     return ("manual", None)
 
 
-def tier_counts(findings):
-    """Return {"mechanical": n, "partial": n, "manual": n} for a list of
-    finding dicts."""
-    counts = {"mechanical": 0, "partial": 0, "manual": 0}
+def severity_tier_counts(findings):
+    """Return {"error": {"mechanical": n, "partial": n, "manual": n},
+    "warning": {...}} for a list of finding dicts -- errors and warnings
+    cross-tabbed against fixer tier separately, since "3 mechanical"
+    means something different depending on whether those are errors or
+    warnings."""
+    counts = {
+        "error": {"mechanical": 0, "partial": 0, "manual": 0},
+        "warning": {"mechanical": 0, "partial": 0, "manual": 0},
+    }
     for f in findings:
         tier, _ = classify(f)
-        counts[tier] += 1
+        counts[f["severity"]][tier] += 1
     return counts
