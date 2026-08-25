@@ -30,6 +30,7 @@ tool used for this purpose):
 import argparse
 import inspect
 import json
+import os
 import re
 import string
 import sys
@@ -70,7 +71,7 @@ PEER_REVIEW_PLATFORM = "Peer Review:In-Platform"
 BUILD_PROCESS_15A = "Build Process step 15a"
 
 
-def finding(findings, severity, section, resource, message):
+def finding(findings, severity, section, resource, message, check=None):
     # "check" is the calling check_* function's name, captured automatically
     # so every call site gets a stable identifier for free — no risk of it
     # drifting out of sync with a hand-maintained slug at ~30 call sites.
@@ -81,7 +82,16 @@ def finding(findings, severity, section, resource, message):
     # under this same id — distinguishable via `section` ("naming hygiene"
     # vs "Standards §6") if a consumer ever needs to dispatch them
     # differently.
-    check = inspect.stack()[1].function
+    #
+    # The optional `check` override exists for the one case where a
+    # check_* function delegates to a shared helper that calls finding()
+    # on its behalf (_check_image_conventions, called by check_images for
+    # cover/banner/icon in turn) — without it, auto-capture would grab the
+    # helper's own name instead of the conceptual check it's part of. No
+    # existing call site needs to change; this only fires when explicitly
+    # passed.
+    if check is None:
+        check = inspect.stack()[1].function
     findings.append(
         {"severity": severity, "section": section, "resource": resource,
          "message": message, "check": check}
@@ -231,19 +241,85 @@ def _find_image(root, stem):
     return None
 
 
+_PNG_MAGIC = b"\x89PNG\r\n\x1a\n"
+_JPEG_MAGIC = b"\xff\xd8\xff"
+
+
+def _sniff_image_format(path):
+    # Sniffs actual bytes, never trusts the .png/.jpg filename -- confirmed
+    # necessary against real fleet data (2026-08-25): 27 of 98 sampled real
+    # Cover/Banner/Icon file/*.contents entries are actually JPEG despite
+    # the filename convention, including juniper's. Returns None if the
+    # file can't be read (e.g. a broken symlink) rather than raising --
+    # that's its own, separately-reported finding.
+    try:
+        with path.open("rb") as f:
+            head = f.read(8)
+    except OSError:
+        return None
+    if head.startswith(_PNG_MAGIC):
+        return "PNG"
+    if head.startswith(_JPEG_MAGIC):
+        return "JPEG"
+    return "unknown"
+
+
+def _check_image_conventions(path, label, findings):
+    # New §16 (2026-08-25 standards revision): cover/banner/icon must be
+    # symlinks into file/*.contents, not raw duplicate bytes, so the repo
+    # copy and the packed kit can't drift into divergent images. Warning,
+    # not error -- brand-new requirement, the existing fleet predates it
+    # almost entirely.
+    if not path.is_symlink():
+        finding(findings, "warning", f"{STANDARDS} {SEC['16']}", f"{label} image",
+                f"{path.name} is a raw file, not a symlink into file/*.contents -- "
+                "new convention as of the 2026-08-25 standards revision, not required yet",
+                check="check_images")
+    else:
+        target = os.readlink(path)
+        if "file/" not in target or not target.endswith(".contents"):
+            finding(findings, "warning", f"{STANDARDS} {SEC['16']}", f"{label} image",
+                    f"{path.name} is a symlink but doesn't point into file/*.contents "
+                    f"(points to {target!r})", check="check_images")
+
+    # New: images should be PNG specifically (size optimization). Warning,
+    # not error -- confirmed real, current fleet non-compliance (27 of 98
+    # sampled Cover/Banner/Icon entries are JPEG), so this can't be a hard
+    # error without breaking a large fraction of existing kits immediately.
+    fmt = _sniff_image_format(path)
+    if fmt is None:
+        finding(findings, "warning", f"{STANDARDS} {SEC['16']}", f"{label} image",
+                f"{path.name} couldn't be read to verify its format (broken symlink?)",
+                check="check_images")
+    elif fmt != "PNG":
+        finding(findings, "warning", f"{STANDARDS} {SEC['5.2']}", f"{label} image",
+                f"{path.name} is {fmt}, not PNG -- new convention, not required yet",
+                check="check_images")
+
+
 def check_images(root, findings):
-    if not _find_image(root, "cover"):
+    cover = _find_image(root, "cover")
+    if not cover:
         finding(findings, "error", f"{STANDARDS} {SEC['5.2']} / {SEC['16']}", "cover image",
                 "no cover.{png,jpg} found at kit root — note: must be a plain filename, "
                 "not <kitname>-cover.*")
-    if not _find_image(root, "banner"):
+    else:
+        _check_image_conventions(cover, "cover", findings)
+
+    banner = _find_image(root, "banner")
+    if not banner:
         finding(findings, "error", f"{STANDARDS} {SEC['5.2']} / {SEC['16']}", "banner image",
                 "no banner.{png,jpg} found at kit root")
+    else:
+        _check_image_conventions(banner, "banner", findings)
+
     icon_matches = list(root.glob("*[Ii]con*.png")) + list(root.glob("*[Ii]con*.jpg"))
     if not icon_matches:
         finding(findings, "warning", f"{STANDARDS} {SEC['5.2']}", "icon image",
                 "no file matching *icon*.{png,jpg} found — filename convention for Icon "
                 "isn't confirmed against a real sample, treat as best-effort")
+    else:
+        _check_image_conventions(icon_matches[0], "icon", findings)
 
 
 def check_license(root, findings):
