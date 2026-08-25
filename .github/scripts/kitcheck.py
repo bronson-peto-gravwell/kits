@@ -86,7 +86,7 @@ def finding(findings, severity, section, resource, message, check=None):
     # The optional `check` override exists for the one case where a
     # check_* function delegates to a shared helper that calls finding()
     # on its behalf (_check_image_conventions, called by check_images for
-    # cover/banner/icon in turn) — without it, auto-capture would grab the
+    # cover/banner in turn) — without it, auto-capture would grab the
     # helper's own name instead of the conceptual check it's part of. No
     # existing call site needs to change; this only fires when explicitly
     # passed.
@@ -313,13 +313,9 @@ def check_images(root, findings):
     else:
         _check_image_conventions(banner, "banner", findings)
 
-    icon_matches = list(root.glob("*[Ii]con*.png")) + list(root.glob("*[Ii]con*.jpg"))
-    if not icon_matches:
-        finding(findings, "warning", f"{STANDARDS} {SEC['5.2']}", "icon image",
-                "no file matching *icon*.{png,jpg} found — filename convention for Icon "
-                "isn't confirmed against a real sample, treat as best-effort")
-    else:
-        _check_image_conventions(icon_matches[0], "icon", findings)
+    # Icon deliberately not checked -- see docs/kitcheck-standards-checklist.md,
+    # "Images," for why this was removed rather than left as a
+    # never-passing warning.
 
 
 def check_license(root, findings):
