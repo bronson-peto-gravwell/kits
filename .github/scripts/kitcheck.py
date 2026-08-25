@@ -901,11 +901,13 @@ def run_all_checks(root: Path, base_manifest=None, is_new_kit=False):
     errors = sum(1 for f in findings if f["severity"] == "error")
     warnings = sum(1 for f in findings if f["severity"] == "warning")
 
-    # "Meets initial-release threshold" is defined as zero error-severity
-    # findings. Warnings don't count against it — several warning-level
-    # checks are heuristics or document requirements that real released
-    # kits don't universally follow (see docs/kitcheck-standards-checklist.md),
-    # so treating them as blocking would be a false bar, not a true one.
+    # "Passes" requires zero findings of either severity, not just zero
+    # errors -- a warning is real, unresolved work a kit still needs
+    # before release, not something the report should wave through as
+    # "all clear." (Earlier design deliberately treated errors==0 as
+    # passing, calling it "meets_initial_threshold" -- a deliberately low
+    # bar for velocity. Reversed 2026-08-25: that bar gave false
+    # confidence that a kit with open warnings was ready to merge.)
     result = {
         "kit": {
             "directory": root.name,
@@ -917,7 +919,7 @@ def run_all_checks(root: Path, base_manifest=None, is_new_kit=False):
             "errors": errors,
             "warnings": warnings,
             "total": len(findings),
-            "meets_initial_threshold": errors == 0,
+            "passes": errors == 0 and warnings == 0,
         },
         "findings": findings,
     }
@@ -927,7 +929,7 @@ def run_all_checks(root: Path, base_manifest=None, is_new_kit=False):
 def render_text(result) -> str:
     lines = []
     kit = result["kit"]
-    verdict = "PASSES" if result["summary"]["meets_initial_threshold"] else "NEEDS ATTENTION"
+    verdict = "PASSES" if result["summary"]["passes"] else "NEEDS ATTENTION"
     lines.append(f"kitcheck: {kit.get('name') or kit.get('directory')} ({kit.get('id')}) — {verdict}")
     lines.append(f"  {result['summary']['errors']} error(s), {result['summary']['warnings']} warning(s)")
     if not result["findings"]:
