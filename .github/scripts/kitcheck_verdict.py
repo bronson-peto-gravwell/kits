@@ -11,6 +11,8 @@ Usage: kitcheck_verdict.py <kit-name> <result.json>
 import json
 import sys
 
+from kitcheck_fixer_tiers import tier_counts
+
 kit_name = sys.argv[1]
 result_path = sys.argv[2]
 
@@ -19,4 +21,6 @@ with open(result_path, encoding="utf-8") as f:
 
 s = result["summary"]
 mark = "✅ PASSES" if s["meets_initial_threshold"] else "❌ NEEDS ATTENTION"
-print(f"| `{kit_name}` | {mark} | {s['errors']} | {s['warnings']} |")
+counts = tier_counts(result["findings"])
+print(f"| `{kit_name}` | {mark} | {s['errors']} | {s['warnings']} | "
+      f"{counts['mechanical']} | {counts['partial']} | {counts['manual']} |")

@@ -66,11 +66,11 @@ jobs:
         run: |
           set -euo pipefail
 
-          # Run each kit exactly once (--format text also writes the JSON
-          # via --output), stash the text output per-dir, so the summary
-          # can lead with an aggregate verdict table without re-invoking
-          # the tool just to get a second format.
-          mkdir -p /tmp/kitcheck-text
+          # JSON only -- kitcheck_verdict.py and kitcheck_findings_detail.py
+          # both render their own markdown from it (the aggregate row and
+          # the tiered per-kit detail respectively), so there's no separate
+          # --format text pass to keep in sync.
+          mkdir -p /tmp/kitcheck-tmp
           declare -a verdict_lines
           base_sha="${{ github.event.pull_request.base.sha }}"
           for d in ${{ steps.dirs.outputs.dirs }}; do
@@ -81,19 +81,19 @@ jobs:
             # from base_sha, this is an update and we compare versions; if
             # not, it's a genuinely new kit and Version should start at 1.
             version_args=()
-            if git show "$base_sha:$d/MANIFEST" > "/tmp/kitcheck-text/$safe_name-base-manifest.json" 2>/dev/null; then
-              version_args=(--base-manifest "/tmp/kitcheck-text/$safe_name-base-manifest.json")
+            if git show "$base_sha:$d/MANIFEST" > "/tmp/kitcheck-tmp/$safe_name-base-manifest.json" 2>/dev/null; then
+              version_args=(--base-manifest "/tmp/kitcheck-tmp/$safe_name-base-manifest.json")
             else
               version_args=(--new-kit)
             fi
 
-            python3 .github/scripts/kitcheck.py --input "$d" --format text "${version_args[@]}" \
-              --output "kitcheck-$d.json" > "/tmp/kitcheck-text/$safe_name.txt" 2>&1 || true
+            python3 .github/scripts/kitcheck.py --input "$d" --format json "${version_args[@]}" \
+              --output "kitcheck-$d.json" > /dev/null 2>&1 || true
 
             if [ -f "kitcheck-$d.json" ]; then
               line=$(python3 .github/scripts/kitcheck_verdict.py "$d" "kitcheck-$d.json")
             else
-              line="| \`$d\` | ⚠️ couldn't evaluate (not a valid kit directory?) | — | — |"
+              line="| \`$d\` | ⚠️ couldn't evaluate (not a valid kit directory?) | — | — | — | — | — |"
             fi
             verdict_lines+=("$line")
           done
@@ -105,8 +105,13 @@ jobs:
             echo "in kit-management for what's covered and what isn't. **Advisory, not a merge gate** —"
             echo "\"NEEDS ATTENTION\" means error-severity findings exist, not that the build failed."
             echo
-            echo "| Kit | Verdict | Errors | Warnings |"
-            echo "|---|---|---|---|"
+            echo "🔧 Mechanical / 🟡 Partial / 🔴 Manual = kit-utilities fixer coverage for each"
+            echo "finding, not an assessment of whether it's a real problem — some manual findings"
+            echo "are known-intentional for a given kit; that's a judgment call for whoever's"
+            echo "looking at it, not something kitcheck asserts."
+            echo
+            echo "| Kit | Verdict | Errors | Warnings | 🔧 Mechanical | 🟡 Partial | 🔴 Manual |"
+            echo "|---|---|---|---|---|---|---|"
             for line in "${verdict_lines[@]}"; do
               echo "$line"
             done
@@ -114,11 +119,10 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
           for d in ${{ steps.dirs.outputs.dirs }}; do
-            safe_name=$(echo "$d" | tr '/' '_')
-            echo "### \`$d\`" >> "$GITHUB_STEP_SUMMARY"
-            echo '```' >> "$GITHUB_STEP_SUMMARY"
-            cat "/tmp/kitcheck-text/$safe_name.txt" >> "$GITHUB_STEP_SUMMARY"
-            echo '```' >> "$GITHUB_STEP_SUMMARY"
+            if [ -f "kitcheck-$d.json" ]; then
+              echo "### \`$d\`" >> "$GITHUB_STEP_SUMMARY"
+              python3 .github/scripts/kitcheck_findings_detail.py "$d" "kitcheck-$d.json" >> "$GITHUB_STEP_SUMMARY"
+            fi
           done
 
       - name: Sync kitcheck:pass / kitcheck:needs-attention label
