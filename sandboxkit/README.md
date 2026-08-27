@@ -7,3 +7,5 @@ You'll need an OpenWeatherMap API key (see [this guide](https://openweathermap.o
 The weather kit is licensed under the BSD 2-Clause license and the contents are available on [Github](https://github.com/gravwell/kits/tree/main/weather).
 
 Cover image by [Johannes Plenio](https://unsplash.com/@jplenio) on Unsplash
+
+<!-- trivial edit for pr-title-lint rejection test -->
