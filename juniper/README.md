@@ -89,3 +89,5 @@ The Gravwell Juniper Kit provides a baseline set of queries, dashboards, templat
 
 
 \#\# Credits - Photo by [Thomas Jensen](https://unsplash.com/@thomasjsn "https://unsplash.com/@thomasjsn") on [Unsplash](https://unsplash.com "https://unsplash.com") \#\#
+
+<!-- kitcheck workflow test (current state), scratch — safe to close without merging -->
