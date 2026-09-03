@@ -1,0 +1,73 @@
+name: Flag pending prod validation
+
+# A merged kit PR is "released" -- it's in the repo, it's the record on
+# the public catalog Project's Recent Releases view -- but it isn't yet
+# live in the platform. That still needs a manual step: load the kit
+# from GitHub to a beta server, do a final check, then build/sign/host
+# it on the Official Kits server. This workflow opens a same-repo
+# tracking issue for that gap the moment a kit PR merges; closing the
+# issue *is* the "flagged prod-ready" signal -- GitHub's own
+# closed-by/closed-at metadata becomes the audit trail, no separate
+# field needed.
+#
+# Deliberately NOT in gravwell/kits-issues. That repo's Kit Candidate
+# issue already closes automatically at merge time, via the release
+# PR's own `Closes gravwell/kits-issues#N` -- wedging a new phase onto
+# an object whose lifecycle is designed to end right then would fight
+# it, the same anti-pattern as the old permanent, never-closing `Kit:
+# <dir>` tracking issue this project already retired once. Being
+# same-repo also means no cross-repo credential -- unlike
+# accept-and-announce.yml, this doesn't need the GitHub App at all.
+#
+# Gated on kitcheck:pass/kitcheck:needs-attention, not labeler.yml's
+# new-kit/improvement (which mislabels a pure-tooling PR touching no
+# kit directory as "new-kit") or the title-derived release-type labels
+# (which a repo-tooling PR can carry too, if its title happens to also
+# start with e.g. "Fix: "). kitcheck:pass/needs-attention is the one
+# signal that's precisely "this PR touched a real kit directory" --
+# see kitcheck-report.yml's own MANIFEST-based detection.
+#
+# HARD DEPENDENCY: kitcheck-report.yml's label-sync step currently needs
+# issues:write (not issues:read) to actually apply either label --
+# see fix/kitcheck-report-permissions, staged but not yet merged as of
+# this writing. Until that lands, no PR ever carries either label, so
+# this workflow's condition never fires and no issue ever gets opened,
+# even for a real kit release. Land that fix first, or this ships
+# silently inert.
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  issues: write
+
+jobs:
+  flag:
+    runs-on: ubuntu-latest
+    if: >
+      github.event.pull_request.merged == true &&
+      (contains(github.event.pull_request.labels.*.name, 'kitcheck:pass') ||
+       contains(github.event.pull_request.labels.*.name, 'kitcheck:needs-attention'))
+    steps:
+      - name: Open pending-prod-validation issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          title="${{ github.event.pull_request.title }}"
+          # Strips the enforced "<Prefix>: " lead (New Kit:/Improvement:/
+          # Findings:/Fix:/Docs:, see pr-title-lint.yml) -- single # trims
+          # the shortest match, i.e. only up through the first ": ".
+          kit_name="${title#*: }"
+          pr_number="${{ github.event.pull_request.number }}"
+          pr_url="${{ github.event.pull_request.html_url }}"
+          repo="${{ github.repository }}"
+
+          body="Merged in #${pr_number} (${pr_url}). Released to the repo, but not yet live in the platform -- pending the manual beta-load, final check, sign, and host step onto the Official Kits server."
+          body="${body}"$'\n\n'"Close this issue once it's confirmed prod-ready and hosted."
+
+          gh issue create --repo "$repo" \
+            --title "Kit: ${kit_name} — Pending Prod Validation" \
+            --label pending-prod-validation \
+            --body "$body"
