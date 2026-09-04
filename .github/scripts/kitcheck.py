@@ -426,6 +426,22 @@ def _strip_fenced_blocks(text):
     # text with fenced regions (and their ``` marker lines) removed, so
     # an inline-span scan never re-inspects a fenced block's own content
     # as if it were a separate inline span.
+    #
+    # A <pre>-stripping variant of this was tried and reverted the same
+    # day (2026-09-04), on the reasoning that <pre> is raw HTML Gravwell
+    # passes through untouched. That premise didn't hold: live-rendering
+    # evidence (kit-utilities' docs/playbookmd-spec.md, "Current status
+    # 2026-09-04") confirmed Gravwell doesn't render *any* raw HTML
+    # correctly in a playbook, <pre> included -- it gets pulled out of
+    # its paragraph and rendered oddly, not passed through as intended.
+    # Whether content inside <pre> still runs through Gravwell's Markdown
+    # emphasis engine (and is therefore still exposed to the underscore
+    # bug this helper's caller checks for) isn't confirmed either way,
+    # but "not confirmed safe" means this check should keep scanning it,
+    # not exempt it -- same reasoning kit-utilities' own playbookmdfix
+    # already reached for the identical question (see that file's "Bug 2"
+    # section). Revisit if the platform's raw-HTML rendering bug is fixed
+    # and <pre> is then live-confirmed as an actual safe zone.
     lines = text.splitlines()
     in_block = False
     kept = []
@@ -849,20 +865,37 @@ def check_naming_consistency(root, findings):
             finding(findings, "warning", "naming hygiene", path,
                     f"name has leading/trailing whitespace: {name!r}")
 
-    if len(contents) < 3:
-        return  # not enough samples to establish a dominant prefix meaningfully
-
-    from collections import Counter
-    prefixes = Counter(_prefix_of(name) for _, name in contents)
-    dominant, dominant_count = prefixes.most_common(1)[0]
-    if dominant_count / len(contents) <= 0.5:
-        return  # no clear dominant convention in this kit, don't guess
-
+    # Dominant prefix is computed per resource kind (dashboard/searchlibrary/
+    # scheduled/pivot independently), not pooled across all four combined --
+    # fixed 2026-09-04 after a confirmed real false-positive class (LLM
+    # Observability, aws_guardduty): real fleet convention has two
+    # legitimate, different prefix conventions depending on resource kind
+    # (dashboards use the kit's own name; searchlibrary/scheduled/alert
+    # content often uses a resource-type word instead, e.g. "Search - ...").
+    # Pooling let whichever kind had more raw content decide "the" dominant
+    # prefix for every kind — aws_guardduty's 2 dashboards ("AWS GuardDuty -
+    # ...") were flagged because its searchlibrary/scheduled volume made
+    # "GuardDuty" the pooled-wide winner, despite both dashboards agreeing
+    # with each other. See DECISIONS.md for the full trail.
+    from collections import Counter, defaultdict
+    by_dir = defaultdict(list)
     for path, name in contents:
-        if _prefix_of(name) != dominant:
-            finding(findings, "warning", f"{STANDARDS} {SEC['6']}", path,
-                    f"name {name!r} doesn't share this kit's dominant naming prefix "
-                    f"({dominant!r}) — possible leftover from another kit or inconsistent naming")
+        by_dir[path.split("/", 1)[0]].append((path, name))
+
+    for d, items in by_dir.items():
+        if len(items) < 3:
+            continue  # not enough samples in this directory to establish a dominant prefix meaningfully
+
+        prefixes = Counter(_prefix_of(name) for _, name in items)
+        dominant, dominant_count = prefixes.most_common(1)[0]
+        if dominant_count / len(items) <= 0.5:
+            continue  # no clear dominant convention within this directory, don't guess
+
+        for path, name in items:
+            if _prefix_of(name) != dominant:
+                finding(findings, "warning", f"{STANDARDS} {SEC['6']}", path,
+                        f"name {name!r} doesn't share this kit's dominant naming prefix "
+                        f"within {d}/ ({dominant!r}) — possible leftover from another kit or inconsistent naming")
 
 
 def check_readme_content(root, findings):
