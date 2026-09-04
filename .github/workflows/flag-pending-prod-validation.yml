@@ -1,16 +1,17 @@
 name: Flag pending prod validation
 
-# NOT CURRENTLY BEING DEPLOYED -- staged on this branch only, deliberately
-# held back, 2026-09-03. This solves for tracking a one-time large batch
+# NOT CURRENTLY BEING DEPLOYED -- staged here only, deliberately held
+# back, 2026-09-03. This solves for tracking a one-time large batch
 # (~15 kits at once, the current backlog) through beta-load/check/sign/
 # host -- once that batch clears, expected steady-state is a few kits at
 # a time, which doesn't need a tracking mechanism to stay manageable by
 # eye. Reconsider if that assumption stops holding (batch sizes creep
 # back up, or the manual step turns out to need tracking for other
-# reasons). Not part of the current PR -- see fix/kitcheck-report-
-# permissions, the sibling branch this was briefly merged into and then
-# split back out of. See kit-management's docs/kit-pipeline.md, "Post-
-# release: prod validation," for the full reasoning either way.
+# reasons). Not part of the current gravwell/kits PR -- staged on its
+# own fork branch (feat/pending-prod-validation-tracking), briefly
+# merged into fix/kitcheck-report-permissions and then split back out.
+# See "Post-release: prod validation" below for the full reasoning
+# either way.
 #
 # A merged kit PR is "released" -- it's in the repo, it's the record on
 # the public catalog Project's Recent Releases view -- but it isn't yet
