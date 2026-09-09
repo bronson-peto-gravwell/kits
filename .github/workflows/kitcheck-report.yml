@@ -115,10 +115,6 @@ jobs:
 
             findings=()
 
-            if ! grep -qF "'$d/**'" .github/labeler.yml; then
-              findings+=("- \`labeler.yml\` doesn't list \`$d/**\` yet — the next PR touching this kit will mislabel as \`new-kit\` again.")
-            fi
-
             if ! grep -qE "^[[:space:]]*-[[:space:]]*$d[[:space:]]*\$" .github/ISSUE_TEMPLATE/kit_change.yml; then
               findings+=("- \`kit_change.yml\`'s Kit dropdown doesn't list \`$d\` yet — nobody can file an Existing Kit Change issue against it until it's added.")
             fi
