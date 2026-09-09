@@ -32,11 +32,13 @@ name: Flag pending prod validation
 # same-repo also means no cross-repo credential -- unlike
 # accept-and-announce.yml, this doesn't need the GitHub App at all.
 #
-# Gated on kitcheck:pass/kitcheck:needs-attention, not labeler.yml's
-# new-kit/improvement (which mislabels a pure-tooling PR touching no
-# kit directory as "new-kit") or the title-derived release-type labels
-# (which a repo-tooling PR can carry too, if its title happens to also
-# start with e.g. "Fix: "). kitcheck:pass/needs-attention is the one
+# Gated on kitcheck:pass/kitcheck:needs-attention, not the title-derived
+# release-type labels (which a repo-tooling PR can carry too, if its
+# title happens to also start with e.g. "Fix: ") -- and not labeler.yml's
+# new-kit/improvement either, though that's moot now: labeler.yml is
+# retired entirely as of 2026-09-08 (it had the identical
+# mislabels-pure-tooling-PRs-as-new-kit problem this workflow was
+# already avoiding). kitcheck:pass/needs-attention is the one
 # signal that's precisely "this PR touched a real kit directory" --
 # see kitcheck-report.yml's own MANIFEST-based detection.
 #
