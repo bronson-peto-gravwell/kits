@@ -390,7 +390,15 @@ def check_playbooks(root, findings):
 # bare module names beyond this one confirmed, repeated real pattern --
 # same "scope from real fleet evidence, don't build ahead of it"
 # discipline as the rest of this file.
-_QUERY_LIKE_RE = re.compile(r"^\s*\(?\s*(tag\s*=|\$[A-Z_][A-Z0-9_]*|dump\b)")
+#
+# Optional leading "@name{" (a Gravwell named-subquery: the pipeline's
+# results are bound to @name for a later stage to reference, e.g.
+# "@count{tag=$SYSMON ... | stats count as total}; tag=$SYSMON ... |
+# enrich -r @count total") -- confirmed real and legitimate (Windows
+# Sysmon's Kit Overview playbook, 2026-09-17), previously a false
+# positive because the actual tag=/$MACRO/dump start is pushed past the
+# "@name{" prefix this regex didn't account for.
+_QUERY_LIKE_RE = re.compile(r"^\s*(?:@[A-Za-z_][A-Za-z0-9_]*\{\s*)?\(?\s*(tag\s*=|\$[A-Z_][A-Z0-9_]*|dump\b)")
 
 
 def _playbook_fenced_blocks(text):
