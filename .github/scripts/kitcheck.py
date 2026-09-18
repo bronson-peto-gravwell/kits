@@ -693,6 +693,42 @@ def check_actionables(root, findings):
                     f"this content's triggers={patterns!r}; also used by {others}")
 
 
+# A real Gravwell template variable is %%NAME%% -- confirmed as the
+# exclusive, 100%-consistent convention across every other real kit
+# checked (juniper, o365, thinkst-canary, okta, duo, cisco_asa,
+# aws_cloudtrail, github — ~140 declared variables, zero exceptions).
+# Windows Sysmon was found using "_GUID_"/"_HASH_" (underscore-wrapped)
+# for 10 of its 24 templates instead, confirmed real 2026-09-18 — not a
+# broken reference (every pivot action referencing those templates
+# correctly used the matching "_GUID_"/"_HASH_" form, so nothing was
+# actually mis-substituting), just a style outlier next to the rest of
+# the fleet.
+_TEMPLATE_VAR_RE = re.compile(r"^%%[^%]+%%$")
+
+
+def check_template_variables(root, findings):
+    template_dir = root / "template"
+    if not template_dir.exists():
+        return
+    for p in sorted(template_dir.glob("*.meta")):
+        d = _load_json_safe(p)
+        if not isinstance(d, dict):
+            continue
+        name = d.get("Name", p.stem)
+        data = d.get("Data") or {}
+        for v in data.get("variables") or []:
+            if not isinstance(v, dict):
+                continue
+            vname = v.get("name")
+            if not isinstance(vname, str) or not vname.strip():
+                finding(findings, "error", PEER_REVIEW_PLATFORM, f"template/{p.name} ({name})",
+                        "a Data.variables[] entry has no name")
+            elif not _TEMPLATE_VAR_RE.match(vname):
+                finding(findings, "warning", PEER_REVIEW_PLATFORM, f"template/{p.name} ({name})",
+                        f"variable {vname!r} doesn't use the %%NAME%% convention every other "
+                        "real kit uses exclusively")
+
+
 def check_content_labels(root, findings):
     # Standards §7: dashboards/actionables(pivot)/macros/templates should
     # carry "EVs used" labels; detections need ATT&CK + metadata labels.
@@ -991,6 +1027,7 @@ def run_all_checks(root: Path, base_manifest=None, is_new_kit=False):
     check_playbook_underscore_emphasis(root, findings)
     check_dashboards(root, findings)
     check_actionables(root, findings)
+    check_template_variables(root, findings)
     check_content_labels(root, findings)
     check_detection_labels(root, findings)
     check_scheduled_searches(root, findings)
