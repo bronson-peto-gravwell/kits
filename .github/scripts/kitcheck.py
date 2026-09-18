@@ -413,17 +413,57 @@ def _playbook_fenced_blocks(text):
     # the thing this check exists to look at, was never inspected at
     # all). A fence line's own info-string content doesn't matter for
     # telling code from prose; only whether the line starts with ```.
+    #
+    # Two further real, confirmed shapes (Windows Sysmon's Kit Overview
+    # playbook, 2026-09-18) that a pure line-start/toggle scan mishandles:
+    #
+    # 1. A single-line span, open and close backticks on the same line
+    #    (e.g. "```tag=$SYSMON ... | chart count```", used repeatedly for
+    #    short one-liner queries). Treated as a complete, self-contained
+    #    block instead of toggling state -- otherwise this opening marker
+    #    would pair with some unrelated closing marker possibly
+    #    paragraphs away, misreading everything between as one giant
+    #    block.
+    # 2. A fence glued directly to real content with no newline, on
+    #    either side (e.g. an opening "```tag=$SYSMON ... GrantedAccess |"
+    #    continuing straight into query text, or a closing
+    #    "...table Computer count Flags```" with no newline before the
+    #    marker). The closing side is handled by searching for the
+    #    marker anywhere in the line, not just at its start. The opening
+    #    side only captures the glued content when it itself looks
+    #    query-like (_QUERY_LIKE_RE) -- an ordinary info string
+    #    (```json, ```shell, ```{note}, all confirmed real in
+    #    aws_cloudtrail) never matches that pattern, so normal fenced
+    #    blocks are unaffected; a real query glued to its own opening
+    #    fence no longer goes missing from the block _first_significant_
+    #    line looks at, which would otherwise misclassify a genuine query
+    #    as prose.
     lines = text.splitlines()
     in_block = False
     current = []
     for line in lines:
-        if line.strip().startswith("```"):
-            if in_block:
-                yield "\n".join(current)
-                current = []
-            in_block = not in_block
+        stripped = line.strip()
+        if not in_block and stripped.startswith("```"):
+            content_after = line[line.find("```") + 3:]
+            close_idx = content_after.find("```")
+            if close_idx != -1:
+                yield content_after[:close_idx]
+                continue
+            in_block = True
+            current = []
+            if _QUERY_LIKE_RE.match(content_after):
+                current.append(content_after)
             continue
         if in_block:
+            close_idx = line.find("```")
+            if close_idx != -1:
+                prefix = line[:close_idx]
+                if prefix.strip():
+                    current.append(prefix)
+                yield "\n".join(current)
+                current = []
+                in_block = False
+                continue
             current.append(line)
     if in_block and current:
         yield "\n".join(current)
@@ -450,15 +490,37 @@ def _strip_fenced_blocks(text):
     # already reached for the identical question (see that file's "Bug 2"
     # section). Revisit if the platform's raw-HTML rendering bug is fixed
     # and <pre> is then live-confirmed as an actual safe zone.
+    #
+    # Same single-line-span and glued-fence shapes _playbook_fenced_blocks
+    # handles (see its docstring comment) apply here too -- a single-line
+    # span contributes nothing to kept prose (the whole line is fence
+    # interior) and doesn't toggle state; a closing marker glued to
+    # trailing content keeps that trailing part, since it's outside the
+    # fence. Unlike _playbook_fenced_blocks, glued content right after an
+    # *opening* marker never needs capturing here -- it's fence interior
+    # either way, so it's correctly excluded regardless of what it looks
+    # like.
     lines = text.splitlines()
     in_block = False
     kept = []
     for line in lines:
-        if line.strip().startswith("```"):
-            in_block = not in_block
+        stripped = line.strip()
+        if not in_block and stripped.startswith("```"):
+            content_after = line[line.find("```") + 3:]
+            if "```" in content_after:
+                continue
+            in_block = True
             continue
-        if not in_block:
-            kept.append(line)
+        if in_block:
+            close_idx = line.find("```")
+            if close_idx != -1:
+                in_block = False
+                trailing = line[close_idx + 3:]
+                if trailing.strip():
+                    kept.append(trailing)
+                continue
+            continue
+        kept.append(line)
     return "\n".join(kept)
 
 
@@ -497,13 +559,12 @@ def check_playbook_code_spans(root, findings):
     # never an error. The Markdown spec also treats 4-space/1-tab
     # indentation as a code block, deliberately not checked here: too
     # easy to false-positive against an ordinarily indented nested list.
-    # Known, confirmed-real gap: a fence glued directly to its content
-    # with no newline (e.g. "count Flags```") isn't reliably parsed here
-    # either -- real malformed fence usage seen in the wild (sysmon's
-    # Kit Overview playbook, which also independently has 13 of its 16
-    # fenced blocks as prose/headers/an image rather than queries --
-    # that playbook's rendering is very likely broken today) -- a human
-    # still needs to catch the glued-fence case by eye.
+    # A single-line span and a fence glued directly to its content with
+    # no newline (e.g. "count Flags```") -- real malformed fence usage
+    # confirmed in the wild on Sysmon's Kit Overview playbook -- used to
+    # desync every fence pairing for the rest of the file; fixed in
+    # _playbook_fenced_blocks (see its own comment), which is what this
+    # function actually iterates over.
     playbook_dir = root / "playbook"
     if not playbook_dir.exists():
         return
