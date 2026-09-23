@@ -1,5 +1,5 @@
 {
 	"Name": "NGINX_ERR",
 	"Description": "Nginx Error tag",
-	"Labels": null
+	"Labels": ["nginx", "webserver"]
 }

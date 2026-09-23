@@ -14,5 +14,5 @@
 			}
 		]
 	},
-	"Labels": null
+	"Labels": ["nginx"]
 }

@@ -14,5 +14,5 @@
 			}
 		]
 	},
-	"Labels": null
+	"Labels": ["ip investigate", "nginx", "web server"]
 }

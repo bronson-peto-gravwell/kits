@@ -34,7 +34,7 @@ Connection logs contain the following fields. Queries provided in the kit apply 
 Error logs are assumed to be in default format. An autoextractor is configured for tag=nginx-err, and can be accessed with the ax processor. This autoextractor must be updated if you use a different tag than nginx-err.
 
 ```
-tag=nginx-err ax
+tag=$NGINX_ERR ax
 ```
 
 - module
