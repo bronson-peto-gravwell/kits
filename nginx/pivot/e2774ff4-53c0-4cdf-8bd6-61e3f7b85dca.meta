@@ -3,7 +3,7 @@
 	"Name": "Nginx - Status Code",
 	"Description": "Status code actionable for Nginx logs",
 	"Data": {
-		"menuLabel": "",
+		"menuLabel": "Nginx Status Code",
 		"actions": [
 			{
 				"name": "Nginx - HTTP Status Code Search",

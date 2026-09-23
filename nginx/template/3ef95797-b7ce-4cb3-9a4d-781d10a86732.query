@@ -1,3 +1,0 @@
-tag=$APACHE json status remote_addr == %%investigate_ip%% uri method
-| eval status > 400 
-| table uri method status

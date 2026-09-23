@@ -1,3 +1,0 @@
-tag=$APACHE json remote_addr == %%investigate_ip%% user_agent
-| count by user_agent
-| table user_agent count

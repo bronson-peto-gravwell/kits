@@ -2,7 +2,7 @@
 	"ID": "io.gravwell.nginx",
 	"Name": "Nginx Detection Kit",
 	"Desc": "Provides tools and utilities to work with Nginx logs.",
-	"Readme": "This kit is designed to provide an out-of-the-box experience for working with Nginx logs.\n\nAn integration guide is available on [this documentation page](https://docs.gravwell.io/integrations/application/nginx.html)\n\nThis kit provides the following utilities:\n\n- Queries\n    - Detections\n    - Stats\n- Dashboards\n- Scheduled Searches\n- Actionables\n- Macros\n- Templates\n\nRefer to Kit Overview playbook for more detail on these components.\n\n## Dependencies\nNone\n\n## Changelog:\n**v1.0: Initial Release**",
+	"Readme": "This kit is designed to provide an out-of-the-box experience for working with Nginx logs.\n\nAn integration guide is available on [this documentation page](https://docs.gravwell.io/integrations/application/nginx.html)\n\nThis kit provides the following utilities:\n\n- Queries\n    - Detections\n    - Stats\n- Dashboards\n- Scheduled Searches\n- Actionables\n- Macros\n- Templates\n\nRefer to Kit Overview playbook for more detail on these components.\n\n## Dependencies\nNone\n\n## Changelog:\n**v1: Initial Release**",
 	"Version": 1,
 	"MinVersion": {
 		"Major": 0,
@@ -299,17 +299,7 @@
 			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
 		},
 		{
-			"Name": "APACHE",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
 			"Name": "NGINX_ERR",
-			"Type": 8,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "AUDITD",
 			"Type": 8,
 			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
 		},
@@ -349,32 +339,7 @@
 			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
 		},
 		{
-			"Name": "3ef95797-b7ce-4cb3-9a4d-781d10a86732",
-			"Type": 6,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "ffd28080-2d17-45f6-bc56-6571fc4597d5",
-			"Type": 6,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "84f33806-62bd-45fa-a7e8-2206481b95cd",
-			"Type": 6,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
 			"Name": "adc5074a-86ed-4a82-b92e-7e593c112158",
-			"Type": 6,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "fcb69451-6527-4297-bb20-544191075779",
-			"Type": 6,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "e4743bbb-9950-45db-ae9a-e2d8fe0f5f1f",
 			"Type": 6,
 			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
 		},
@@ -469,11 +434,6 @@
 			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
 		},
 		{
-			"Name": "36d8335a-390f-49ea-9cea-472530d23902",
-			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
 			"Name": "2ac3395f-85b6-4a1c-91a4-427a55c0e67d",
 			"Type": 9,
 			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
@@ -514,22 +474,12 @@
 			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
 		},
 		{
-			"Name": "547ebc97-9cc0-4c05-9e25-4a290c49300a",
-			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
 			"Name": "f5602ee4-f1d7-45e6-8e3a-d58c7dfb6d66",
 			"Type": 9,
 			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
 		},
 		{
 			"Name": "d5e36fd1-ec78-44c1-b9a3-49887712347a",
-			"Type": 9,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "02718573-3a6e-4f64-8a66-f4cc968b3eef",
 			"Type": 9,
 			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
 		},
@@ -679,32 +629,12 @@
 			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
 		},
 		{
-			"Name": "dbcf4e14-f097-43ce-b6a8-0a91dd13efda",
-			"Type": 7,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "c4d82d2a-fcf1-4c58-93c0-8cca68b3a694",
-			"Type": 7,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
 			"Name": "68fcbfee-21a0-4fda-8555-adf3b0257135",
 			"Type": 7,
 			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
 		},
 		{
 			"Name": "df9d537a-0f44-4b37-8971-d634b0e863c1",
-			"Type": 7,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "112bb1aa-ee19-4149-b566-8bf1ec7240d0",
-			"Type": 7,
-			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
-		},
-		{
-			"Name": "053fedff-1e59-44b8-a244-f9b2c3b84090",
 			"Type": 7,
 			"Hash": "0000000000000000000000000000000000000000000000000000000000000000"
 		},

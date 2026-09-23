@@ -12,61 +12,6 @@
 		},
 		"searches": [
 			{
-				"alias": "Apache - Investigate IP - Activity Timeline",
-				"color": null,
-				"reference": {
-					"id": "fcb69451-6527-4297-bb20-544191075779",
-					"type": "template",
-					"extras": {
-						"defaultValue": null
-					}
-				}
-			},
-			{
-				"alias": "Apache  - Investigate IP - URIs and Methods",
-				"color": null,
-				"reference": {
-					"id": "ffd28080-2d17-45f6-bc56-6571fc4597d5",
-					"type": "template",
-					"extras": {
-						"defaultValue": null
-					}
-				}
-			},
-			{
-				"alias": "Apache - Investigate IP - HTTP Status Breakdown",
-				"color": null,
-				"reference": {
-					"id": "e4743bbb-9950-45db-ae9a-e2d8fe0f5f1f",
-					"type": "template",
-					"extras": {
-						"defaultValue": null
-					}
-				}
-			},
-			{
-				"alias": "Apache - Investigate IP - User Agent Review",
-				"color": null,
-				"reference": {
-					"id": "84f33806-62bd-45fa-a7e8-2206481b95cd",
-					"type": "template",
-					"extras": {
-						"defaultValue": null
-					}
-				}
-			},
-			{
-				"alias": "Apache - Investigate IP - Error Pattern Detail",
-				"color": null,
-				"reference": {
-					"id": "3ef95797-b7ce-4cb3-9a4d-781d10a86732",
-					"type": "template",
-					"extras": {
-						"defaultValue": null
-					}
-				}
-			},
-			{
 				"alias": "Nginx - Investigate IP - Activity Timeline",
 				"color": null,
 				"reference": {
@@ -89,7 +34,7 @@
 				}
 			},
 			{
-				"alias": "Nginx  - Investigate IP - Error Pattern Detail",
+				"alias": "Nginx - Investigate IP - Error Pattern Detail",
 				"color": null,
 				"reference": {
 					"id": "22dcdc66-41e3-4501-b4eb-141108ddad4c",
@@ -111,7 +56,7 @@
 				}
 			},
 			{
-				"alias": "Nginx  - Investigate IP - URIs and Methods",
+				"alias": "Nginx - Investigate IP - URIs and Methods",
 				"color": null,
 				"reference": {
 					"id": "b839ab2c-4ddd-4f7f-87e1-c87a08c90793",
@@ -134,7 +79,7 @@
 					"x": 0,
 					"y": 0
 				},
-				"searchesIndex": 5,
+				"searchesIndex": 0,
 				"rendererOptions": {}
 			},
 			{
@@ -148,7 +93,7 @@
 					"x": 0,
 					"y": 8
 				},
-				"searchesIndex": 9,
+				"searchesIndex": 4,
 				"rendererOptions": {}
 			},
 			{
@@ -162,7 +107,7 @@
 					"x": 10,
 					"y": 4
 				},
-				"searchesIndex": 8,
+				"searchesIndex": 3,
 				"rendererOptions": {}
 			},
 			{
@@ -176,7 +121,7 @@
 					"x": 0,
 					"y": 4
 				},
-				"searchesIndex": 6,
+				"searchesIndex": 1,
 				"rendererOptions": {}
 			},
 			{
@@ -190,7 +135,7 @@
 					"x": 5,
 					"y": 4
 				},
-				"searchesIndex": 7,
+				"searchesIndex": 2,
 				"rendererOptions": {}
 			}
 		],
