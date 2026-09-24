@@ -1,7 +1,7 @@
 {
 	"Name": "nginx-err",
-	"Desc": "Auto-generated syslog extraction for tag nginx-err",
-	"Module": "syslog",
+	"Desc": "Regex extraction for nginx's default error log format (tag nginx-err)",
+	"Module": "regex",
 	"Tag": "nginx-err",
 	"Tags": null,
 	"Labels": null,

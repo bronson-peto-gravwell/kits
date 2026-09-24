@@ -17,6 +17,10 @@ Configuration macros are used in the queries to easily swap in whichever tag you
 This tag looks at an entire tag as a whole, and doesn't provide options to filter by a specific host
 
 ## Nginx Connection Logs
+The kit expects the JSON log format from the [integration guide](https://docs.gravwell.io/integrations/application/nginx.html), plus a query field that logs the query string. If your log format doesn't have it, add a "query" field set to $query_string after the "uri" line.
+
+The uri field is the path only, so without the query field these detections never fire: Nginx - Web Open Redirect Attempt, Nginx - SQL Injection Strings In URI, Nginx - Webshell Regeorg Detection Via Web Logs, Nginx - Windows Webshell Strings, and Nginx - Cross Site Scripting Strings. Ten more check both the path and the query string, and miss attacks carried in the query string.
+
 Connection logs contain the following fields. Queries provided in the kit apply broadly to all Nginx logs in your Gravwell instance. The [src field](https://docs.gravwell.io/search/src/src.html) can be used to specify which particular server you'd like to filter on when narrowing your search to specific sources of connection logs.
 
 - remote_addr
@@ -31,20 +35,26 @@ Connection logs contain the following fields. Queries provided in the kit apply 
 - upstream
 
 ## Nginx Error Logs
-Error logs are assumed to be in default format. An autoextractor is configured for tag=nginx-err, and can be accessed with the ax processor. This autoextractor must be updated if you use a different tag than nginx-err.
+Error logs are assumed to be in nginx's default error log format. An autoextractor is configured for tag=nginx-err, and can be accessed with the ax processor. This autoextractor must be updated if you use a different tag than nginx-err.
 
 ```
 tag=$NGINX_ERR ax
 ```
 
-- module
-- loglevel
+- timestamp
+- loglevel (debug, info, notice, warn, error, crit, alert, emerg)
 - pid
-- client_ip
-- client_port
-- error_code
+- tid
+- connection_id
 - message
+- client_ip
+- server
+- request
+- upstream
+- host
 - referer
+
+Fields after message are only present when nginx logs them for that event. For example, config reloads have no client, and upstream failures include upstream.
 
 # Queries
 Queries are broken out into 2 types and have appropriate labels applied for reference. 
