@@ -946,7 +946,26 @@ def _content_names(root):
     return out
 
 
+# Resource-type words some kits lead content names with, ahead of the kit
+# name: "<Type> - <Kit> - ...". Survey of the full kits_mike fleet + samples
+# (2026-09-25): exactly these four, each in 4-8 kits (auth0, duo, github,
+# okta, thinkst-canary, cisco_asa, cisco_ftd, fortinet), always followed by
+# " - " and the kit name. They are one convention, not rival prefixes:
+# searchlibrary/ legitimately mixes "AlertQuery - Okta - ..." with
+# "Search - Okta - ...", scheduled/ mixes "ScheduledSearch - ..." with
+# "Flow - ...". Without skipping them, per-directory dominance picked one
+# type word and flagged every sibling of the other (+192 fleet false
+# positives). Deliberately an explicit list, not "any single word before
+# ' - '": "Okta - Foo" style names would otherwise lose their kit prefix.
+_RESOURCE_TYPE_PREFIXES = frozenset({"Search", "AlertQuery", "ScheduledSearch", "Flow"})
+
+
 def _prefix_of(name: str) -> str:
+    # A leading resource-type segment ("AlertQuery - ", "Search - ", ...) is
+    # skipped so the comparison lands on the kit-name segment after it.
+    head, sep, rest = name.strip().partition(" - ")
+    if sep and head.strip() in _RESOURCE_TYPE_PREFIXES and rest.strip():
+        name = rest
     # Always just the first word, regardless of whether a " - " separator is
     # present. An earlier version branched on dash-presence (full phrase
     # before " - " if present, else first word) and that inconsistency
