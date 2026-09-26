@@ -65,6 +65,17 @@
 						"defaultValue": null
 					}
 				}
+			},
+			{
+				"alias": "Nginx - Bandwidth By Client",
+				"color": null,
+				"reference": {
+					"id": "1dcc49df-ebf1-5f41-bfe9-743f96d983ce",
+					"type": "savedQuery",
+					"extras": {
+						"defaultValue": null
+					}
+				}
 			}
 		],
 		"tiles": [
@@ -136,6 +147,20 @@
 					"y": 4
 				},
 				"searchesIndex": 2,
+				"rendererOptions": {}
+			},
+			{
+				"id": 3261989012407340,
+				"title": "Bandwidth By Client",
+				"renderer": "table",
+				"hideZoom": true,
+				"span": {
+					"col": 11,
+					"row": 5,
+					"x": 0,
+					"y": 11
+				},
+				"searchesIndex": 5,
 				"rendererOptions": {}
 			}
 		],
