@@ -27,15 +27,18 @@ body:
         - ipmi
         - juniper
         - linux_syslog
+        - llm_observability
         - netflowv5
         - o365
         - okta
         - paloalto
         - pfSense
         - pihole
+        - suricata
         - syslog
         - sysmon
-        - thinkst-canary
+        - teleport
+        - thinkstcanary
         - weather
         - windows
         - windows_resource
