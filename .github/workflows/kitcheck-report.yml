@@ -12,23 +12,14 @@ on:
   pull_request:
     types: [opened, synchronize, reopened]
 
+# Read-only on purpose. Every PR to this repo comes from a fork, and a
+# fork PR's `pull_request` token is read-only whatever this block says
+# (run logs show Contents/Issues/PullRequests: read). So this workflow
+# never writes. It uploads its verdict as the `kitcheck-verdict`
+# artifact, and kitcheck-label-sync.yml (workflow_run, write token, never
+# runs PR code) applies the kitcheck:* label.
 permissions:
   contents: read
-  issues: write
-  pull-requests: write
-
-env:
-  # 33 dirs: original 32 + auth0. ai_agent_preview deliberately excluded
-  # (see DECISIONS.md, "Catalog scope"). Used only to keep the diff scan
-  # honest about what's a kit dir vs repo-level tooling — the MANIFEST
-  # check below is what actually decides whether to run kitcheck on a dir,
-  # so a brand-new kit dir (not yet in this list) still gets checked.
-  KNOWN_KIT_DIRS: >-
-    auditd auth0 aws_cloudtrail aws_guardduty azure barracuda bitwarden
-    cisco_asa cisco_ftd coredns corelight duo fortinet github gravwell
-    grok ipfix ipmi juniper linux_syslog netflowv5 o365 okta paloalto
-    pfSense pihole syslog sysmon thinkst-canary weather windows
-    windows_resource zeek
 
 jobs:
   kitcheck:
@@ -91,7 +82,13 @@ jobs:
               --output "kitcheck-$d.json" > /dev/null 2>&1 || true
 
             if [ -f "kitcheck-$d.json" ]; then
-              python3 .github/scripts/kitcheck_render_report.py "$d" "kitcheck-$d.json" >> "$GITHUB_STEP_SUMMARY"
+              # A renderer crash must not turn the job red (kitcheck is
+              # never a merge gate), so degrade it the same way a
+              # kitcheck crash already degrades.
+              if ! python3 .github/scripts/kitcheck_render_report.py "$d" "kitcheck-$d.json" >> "$GITHUB_STEP_SUMMARY"; then
+                echo "::warning::kitcheck_render_report.py failed for $d; the JSON report is in the kitcheck-reports artifact."
+                echo "## kitcheck: \`$d\` — ⚠️ report couldn't be rendered (see the kitcheck-reports artifact)" >> "$GITHUB_STEP_SUMMARY"
+              fi
             else
               echo "## kitcheck: \`$d\` — ⚠️ couldn't evaluate (not a valid kit directory?)" >> "$GITHUB_STEP_SUMMARY"
             fi
@@ -115,7 +112,7 @@ jobs:
 
             findings=()
 
-            if ! grep -qE "^[[:space:]]*-[[:space:]]*$d[[:space:]]*\$" .github/ISSUE_TEMPLATE/kit_change.yml; then
+            if ! grep -qE "^[[:space:]]*-[[:space:]]*${d}[[:space:]]*\$" .github/ISSUE_TEMPLATE/kit_change.yml; then
               findings+=("- \`kit_change.yml\`'s Kit dropdown doesn't list \`$d\` yet — nobody can file an Existing Kit Change issue against it until it's added.")
             fi
 
@@ -135,36 +132,28 @@ jobs:
             fi
           done
 
-      - name: Sync kitcheck:pass / kitcheck:needs-attention label
+      - name: Record verdict for kitcheck-label-sync.yml
         if: steps.dirs.outputs.dirs != ''
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
-          # Requires the two labels to already exist on the repo (see
-          # github-setup-checklist.md, labels step) — `gh pr edit --add-label`
-          # fails if a label doesn't exist yet, hence `|| true` so a missing
-          # label doesn't break the whole job, just silently skips syncing.
-          #
-          # Also requires `issues: write` above, not just `pull-requests:
-          # write` -- confirmed real 2026-09-03: `gh pr edit`'s combined
-          # add+remove runs as one call that needs `issues: write` for the
-          # remove half (`removeLabelsFromLabelable`), and failed the whole
-          # call (add included) with "Resource not accessible by
-          # integration" on two real PRs (#323, #324) when this only had
-          # `issues: read`. The `|| true` masked it silently -- both PRs'
-          # real kitcheck verdicts (O365: 2 warnings, needs-attention;
-          # Juniper: clean, pass) never got applied.
+          # No labeling here (read-only token, see permissions above).
+          # kitcheck-label-sync.yml reads this artifact and checks
+          # head_sha against the PR's current head before labeling.
           shopt -s nullglob
           json_files=(kitcheck-*.json)
-          verdict=$(python3 .github/scripts/kitcheck_aggregate.py "${json_files[@]}")
-          pr="${{ github.event.pull_request.number }}"
-          repo="${{ github.repository }}"
-          if [ "$verdict" = "pass" ]; then
-            gh pr edit "$pr" --repo "$repo" --add-label "kitcheck:pass" --remove-label "kitcheck:needs-attention" || true
-          else
-            gh pr edit "$pr" --repo "$repo" --add-label "kitcheck:needs-attention" --remove-label "kitcheck:pass" || true
-          fi
+          mkdir -p kitcheck-verdict
+          python3 .github/scripts/kitcheck_aggregate.py "${json_files[@]}" > kitcheck-verdict/verdict
+          echo "${{ github.event.pull_request.number }}" > kitcheck-verdict/pr
+          echo "${{ github.event.pull_request.head.sha }}" > kitcheck-verdict/head_sha
+          echo "verdict: $(cat kitcheck-verdict/verdict)"
+
+      - name: Upload verdict
+        if: steps.dirs.outputs.dirs != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: kitcheck-verdict
+          path: kitcheck-verdict/
+          retention-days: 7
 
       - name: No kit directories changed
         if: steps.dirs.outputs.dirs == ''

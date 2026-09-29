@@ -1,0 +1,72 @@
+name: kitcheck label sync
+
+# Applies kitcheck:pass / kitcheck:needs-attention to the PR that
+# kitcheck-report.yml just checked. It's split out because every PR here
+# comes from a fork, and a fork PR's `pull_request` token is read-only,
+# so kitcheck-report.yml can't label.
+#
+# workflow_run gets a write token and runs this file from the default
+# branch. For that reason it must NEVER check out or execute PR content.
+# It only reads three small text files from kitcheck-report's artifact
+# and treats them as untrusted: the verdict must be one of two words, the
+# PR number must be numeric, and the recorded head_sha must match both
+# this run's head_sha and the PR's current head. A stale run on an old
+# commit is skipped; the run on the newer commit labels instead.
+#
+# Labeling is reviewer signal only. kitcheck is never a merge gate.
+
+on:
+  workflow_run:
+    workflows: ["kitcheck report"]
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: read
+  issues: write
+  pull-requests: write
+
+jobs:
+  sync:
+    if: github.event.workflow_run.event == 'pull_request' && github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Apply kitcheck label
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          RUN_ID: ${{ github.event.workflow_run.id }}
+          RUN_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          set -euo pipefail
+          # No verdict artifact means kitcheck-report found no kit dir.
+          if ! gh run download "$RUN_ID" --repo "$REPO" --name kitcheck-verdict --dir v 2>/dev/null; then
+            echo "No kitcheck-verdict artifact on run $RUN_ID (no kit directory changed) - nothing to label."
+            exit 0
+          fi
+
+          verdict=$(head -c 64 v/verdict | tr -d '[:space:]')
+          pr=$(head -c 16 v/pr | tr -d '[:space:]')
+          sha=$(head -c 64 v/head_sha | tr -d '[:space:]')
+          case "$verdict" in pass|needs-attention) ;; *) echo "::error::unexpected verdict '$verdict'"; exit 1;; esac
+          [[ "$pr" =~ ^[0-9]+$ ]] || { echo "::error::unexpected PR number '$pr'"; exit 1; }
+          [ "$sha" = "$RUN_HEAD_SHA" ] || { echo "::error::artifact head_sha $sha != run head_sha $RUN_HEAD_SHA"; exit 1; }
+
+          pr_json=$(gh api "repos/$REPO/pulls/$pr")
+          current=$(jq -r .head.sha <<<"$pr_json")
+          state=$(jq -r .state <<<"$pr_json")
+          if [ "$state" != "open" ] || [ "$current" != "$sha" ]; then
+            echo "PR #$pr is $state at $current, verdict is for $sha - skipping (a newer run will label)."
+            exit 0
+          fi
+
+          if [ "$verdict" = "pass" ]; then add="kitcheck:pass"; remove="kitcheck:needs-attention"
+          else add="kitcheck:needs-attention"; remove="kitcheck:pass"; fi
+
+          # Visible failure, not `|| true`: a masked 403 hid broken
+          # labeling on every fork PR from #323 to #335.
+          if ! gh pr edit "$pr" --repo "$REPO" --add-label "$add" --remove-label "$remove"; then
+            echo "::warning::couldn't set $add on #$pr (label missing on the repo, or token scope)."
+            exit 0
+          fi
+          echo "#$pr: $add"
