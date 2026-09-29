@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Source of truth: kit-program-lab/kit-utilities/kitcheck/kitcheck.py. Edit there, not here.
 """
 kitcheck.py - lightweight, read-only structural validator for Gravwell kits.
 
@@ -439,34 +440,50 @@ def _playbook_fenced_blocks(text):
     #    line looks at, which would otherwise misclassify a genuine query
     #    as prose.
     lines = text.splitlines()
+    for _, content in _fenced_regions_with_content(lines):
+        yield content
+
+
+def _fence_regions(lines):
+    # The fence-pairing state machine shared by _playbook_fenced_blocks and
+    # _strip_fenced_blocks (see the former's comment for the confirmed
+    # shapes). Yields (open_idx, close_idx) line-index pairs: open == close
+    # for a single-line span, close None for a fence never closed. Named so
+    # kitutils' playbookmdfix/playbookgen pair fences exactly as this does
+    # (via kitutils/_kitcheck.py) -- a change here is a check-logic change.
     in_block = False
-    current = []
-    for line in lines:
-        stripped = line.strip()
-        if not in_block and stripped.startswith("```"):
-            content_after = line[line.find("```") + 3:]
-            close_idx = content_after.find("```")
-            if close_idx != -1:
-                yield content_after[:close_idx]
+    start = 0
+    for i, line in enumerate(lines):
+        if not in_block and line.strip().startswith("```"):
+            if "```" in line[line.find("```") + 3:]:
+                yield (i, i)
                 continue
             in_block = True
-            current = []
-            if _QUERY_LIKE_RE.match(content_after):
-                current.append(content_after)
+            start = i
             continue
-        if in_block:
-            close_idx = line.find("```")
-            if close_idx != -1:
-                prefix = line[:close_idx]
-                if prefix.strip():
-                    current.append(prefix)
-                yield "\n".join(current)
-                current = []
-                in_block = False
-                continue
-            current.append(line)
-    if in_block and current:
-        yield "\n".join(current)
+        if in_block and "```" in line:
+            yield (start, i)
+            in_block = False
+    if in_block:
+        yield (start, None)
+
+
+def _fenced_block_content(lines, region):
+    # A region's content as _playbook_fenced_blocks judges it: a
+    # single-line span's interior; otherwise the glued opener content only
+    # when query-like (an info string like json or {note} is dropped), the
+    # interior lines, and any content glued before the closing marker.
+    start, end = region
+    opener_after = lines[start][lines[start].find("```") + 3:]
+    if start == end:
+        return opener_after[:opener_after.find("```")]
+    current = [opener_after] if _QUERY_LIKE_RE.match(opener_after) else []
+    current.extend(lines[start + 1:end if end is not None else len(lines)])
+    if end is not None:
+        prefix = lines[end][:lines[end].find("```")]
+        if prefix.strip():
+            current.append(prefix)
+    return "\n".join(current)
 
 
 def _strip_fenced_blocks(text):
@@ -501,27 +518,75 @@ def _strip_fenced_blocks(text):
     # either way, so it's correctly excluded regardless of what it looks
     # like.
     lines = text.splitlines()
-    in_block = False
-    kept = []
-    for line in lines:
-        stripped = line.strip()
-        if not in_block and stripped.startswith("```"):
-            content_after = line[line.find("```") + 3:]
-            if "```" in content_after:
-                continue
-            in_block = True
-            continue
-        if in_block:
-            close_idx = line.find("```")
-            if close_idx != -1:
-                in_block = False
-                trailing = line[close_idx + 3:]
-                if trailing.strip():
-                    kept.append(trailing)
-                continue
-            continue
-        kept.append(line)
-    return "\n".join(kept)
+    return "\n".join(seg for _, seg in _prose_segments(lines))
+
+
+def _prose_spans(text):
+    # (offset_in_text, segment) for each _prose_segments piece, so a fixer
+    # can edit exactly the text this module scans as prose.
+    lines = text.splitlines()
+    starts = []
+    pos = 0
+    for raw in text.splitlines(keepends=True):
+        starts.append(pos)
+        pos += len(raw)
+    for i, seg in _prose_segments(lines):
+        yield starts[i] + len(lines[i]) - len(seg), seg
+
+
+_INLINE_SPAN_RE = re.compile(r"`([^`\n]+)`")
+
+
+def _playbook_prose_map(text):
+    # The exact prose check_playbook_underscore_emphasis scans (fenced
+    # regions stripped, then inline spans removed), plus origin[i] = the
+    # offset in text of prose[i] (-1 for a joining newline). Lets
+    # playbookmdfix escape precisely the characters this check flags.
+    chars, origin = [], []
+    for n, (off, seg) in enumerate(_prose_spans(text)):
+        if n:
+            chars.append("\n")
+            origin.append(-1)
+        chars.extend(seg)
+        origin.extend(range(off, off + len(seg)))
+    joined = "".join(chars)
+    keep = [True] * len(joined)
+    for m in _INLINE_SPAN_RE.finditer(joined):
+        for k in range(m.start(), m.end()):
+            keep[k] = False
+    prose = "".join(c for c, k in zip(joined, keep) if k)
+    return prose, [o for o, k in zip(origin, keep) if k]
+
+
+def _fenced_regions_with_content(lines):
+    # (region, content) pairs in the order check_playbook_code_spans
+    # judges them -- the unterminated-and-empty skip included.
+    for region in _fence_regions(lines):
+        start, end = region
+        if end is None and start + 1 >= len(lines) and not _QUERY_LIKE_RE.match(lines[start][lines[start].find("```") + 3:]):
+            continue  # unterminated fence with nothing collected after it
+        yield region, _fenced_block_content(lines, region)
+
+
+def _prose_segments(lines):
+    # (line_idx, text) for every piece of lines outside a fence region, in
+    # order: whole lines, plus the trailing part of a closing-marker line
+    # after its ``` (outside the fence). A single-line span's line
+    # contributes nothing, trailing text included -- same as it always has.
+    covered = {}
+    for start, end in _fence_regions(lines):
+        stop = end if end is not None else len(lines) - 1
+        for i in range(start, stop + 1):
+            covered[i] = None
+        if end is not None and end != start:
+            trailing = lines[end][lines[end].find("```") + 3:]
+            if trailing.strip():
+                covered[end] = trailing
+    for i, line in enumerate(lines):
+        if i not in covered:
+            yield i, line
+        elif covered[i] is not None:
+            yield i, covered[i]
 
 
 def _first_significant_line(block):
@@ -935,7 +1000,7 @@ def _content_names(root):
     """Collect (path, name) pairs from directories that carry human-readable
     kit-content names, for the naming-consistency check (§6)."""
     out = []
-    for d in ("dashboard", "searchlibrary", "scheduled", "pivot"):
+    for d in NAMING_DIRS:
         dir_path = root / d
         if not dir_path.exists():
             continue
@@ -947,7 +1012,7 @@ def _content_names(root):
 
 
 # Resource-type words some kits lead content names with, ahead of the kit
-# name: "<Type> - <Kit> - ...". Survey of the full kits_mike fleet + samples
+# name: "<Type> - <Kit> - ...". Survey of the full fleet + samples
 # (2026-09-25): exactly these four, each in 4-8 kits (auth0, duo, github,
 # okta, thinkst-canary, cisco_asa, cisco_ftd, fortinet), always followed by
 # " - " and the kit name. They are one convention, not rival prefixes:
@@ -958,6 +1023,13 @@ def _content_names(root):
 # positives). Deliberately an explicit list, not "any single word before
 # ' - '": "Okta - Foo" style names would otherwise lose their kit prefix.
 _RESOURCE_TYPE_PREFIXES = frozenset({"Search", "AlertQuery", "ScheduledSearch", "Flow"})
+
+# §6 naming-consistency scope and dominance rule. Named (not inline) because
+# kitutils' namingfix imports them; changing any is a check-logic change
+# that needs the fleet regression and namingfix's tests.
+NAMING_DIRS = ("dashboard", "searchlibrary", "scheduled", "pivot")
+NAMING_MIN_SAMPLES = 3
+DOMINANT_PREFIX_THRESHOLD = 0.5
 
 
 def _prefix_of(name: str) -> str:
@@ -980,6 +1052,21 @@ def _prefix_of(name: str) -> str:
     return name.strip().split(" ", 1)[0].strip().rstrip(string.punctuation)
 
 
+def _dominant_prefix(names):
+    """The §6 dominance rule for one directory's names: the most common
+    _prefix_of, only if there are at least NAMING_MIN_SAMPLES names and it
+    covers strictly more than DOMINANT_PREFIX_THRESHOLD of them. None when
+    there's no clear convention. kitutils' namingfix calls this (via
+    kitutils/_kitcheck.py) so the fixer and the check can't disagree."""
+    from collections import Counter
+    if len(names) < NAMING_MIN_SAMPLES:
+        return None  # not enough samples to establish a dominant prefix meaningfully
+    dominant, dominant_count = Counter(_prefix_of(n) for n in names).most_common(1)[0]
+    if dominant_count / len(names) <= DOMINANT_PREFIX_THRESHOLD:
+        return None  # no clear dominant convention, don't guess
+    return dominant
+
+
 def check_naming_consistency(root, findings):
     contents = _content_names(root)
 
@@ -1000,20 +1087,16 @@ def check_naming_consistency(root, findings):
     # prefix for every kind — aws_guardduty's 2 dashboards ("AWS GuardDuty -
     # ...") were flagged because its searchlibrary/scheduled volume made
     # "GuardDuty" the pooled-wide winner, despite both dashboards agreeing
-    # with each other. See DECISIONS.md for the full trail.
-    from collections import Counter, defaultdict
+    # with each other.
+    from collections import defaultdict
     by_dir = defaultdict(list)
     for path, name in contents:
         by_dir[path.split("/", 1)[0]].append((path, name))
 
     for d, items in by_dir.items():
-        if len(items) < 3:
-            continue  # not enough samples in this directory to establish a dominant prefix meaningfully
-
-        prefixes = Counter(_prefix_of(name) for _, name in items)
-        dominant, dominant_count = prefixes.most_common(1)[0]
-        if dominant_count / len(items) <= 0.5:
-            continue  # no clear dominant convention within this directory, don't guess
+        dominant = _dominant_prefix([name for _, name in items])
+        if dominant is None:
+            continue
 
         for path, name in items:
             if _prefix_of(name) != dominant:

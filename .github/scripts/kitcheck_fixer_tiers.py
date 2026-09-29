@@ -1,12 +1,11 @@
+# Source of truth: kit-program-lab/kit-utilities/kitcheck/kitcheck_fixer_tiers.py. Edit there, not here.
 """Classify a kitcheck finding by kit-utilities fixer coverage.
 
-Vendored snapshot of `kit-utilities`' `bin/list-fixers` output, synced
-2026-08-25, spot-checked current as of 2026-08-27 -- not a live query.
-`kit-utilities` is a local, unhosted lab tool, not reachable from
-`gravwell/kits`' CI runner, so this has to be a periodically-refreshed
-copy rather than computed at run time. Re-sync by re-running
-`bin/list-fixers` in kit-utilities and updating FIXER_TIERS below
-whenever fixer coverage changes there.
+Maintained in kit-utilities next to the fixers it describes, so a fixer's coverage change and its entry
+here land in the same commit. The copy in `gravwell/kits`'
+`.github/scripts/` is a byte-identical deploy of this file: CI can't
+query kit-utilities at run time, so FIXER_TIERS below is still a static
+table, checked against `bin/list-fixers` rather than computed from it.
 
 A stale copy here fails safe only for *coverage existence* -- a finding
 just falls through to "manual" (no fixer known), never a false claim
@@ -19,7 +18,7 @@ query already lacked its own ATT&CK label to mirror -- every one of
 those 58 was still correctly tagged "partial," just none of them
 actually resolved.
 
-Fixed 2026-08-27 (tracked in kit-management's DECISIONS.md): the old
+Fixed 2026-08-27: the old
 single `("check_content_labels", None)` entry applied uniformly across
 `dashboard`/`pivot`/`macro`/`template`, but `labelsuggest` only covers
 `dashboard`/`pivot` -- `macro`/`template` findings were tagged "partial"
